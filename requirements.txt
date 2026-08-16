@@ -1,0 +1,2 @@
+reportlab
+mysql-connector-python

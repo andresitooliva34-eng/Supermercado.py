@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1,
+    "cliente_id": 1,
+    "cliente_nombre": "Cliente General",
+    "fecha": "16/08/2026 12:02",
+    "productos": [
+      {
+        "id": 5,
+        "nombre": "Cereales",
+        "cantidad": 1,
+        "precio": 5700.0,
+        "subtotal": 5700.0
+      },
+      {
+        "id": 13,
+        "nombre": "Fideos Tirabuzón 500g",
+        "cantidad": 1,
+        "precio": 1550.0,
+        "subtotal": 1550.0
+      },
+      {
+        "id": 1,
+        "nombre": "Leche entera",
+        "cantidad": 1,
+        "precio": 1200.0,
+        "subtotal": 1200.0
+      }
+    ],
+    "total": 8450.0,
+    "metodo_pago": "Tarjeta"
+  }
+]

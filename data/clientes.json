@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "nombre": "Andres",
+    "apellido": "Oliva",
+    "email": "andresitooliva34@gmail.com",
+    "historial_compras": [
+      1
+    ]
+  }
+]

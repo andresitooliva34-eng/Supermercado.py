@@ -1,0 +1,1 @@
+from assets.estilos import BG_MAIN, ACCENT, CORAL
