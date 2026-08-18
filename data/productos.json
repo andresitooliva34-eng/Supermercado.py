@@ -25,7 +25,7 @@
     "nombre": "Gaseosa cola",
     "categoria": "Bebidas",
     "precio": 3000.0,
-    "stock": 10
+    "stock": 9
   },
   {
     "id": 5,
@@ -46,7 +46,7 @@
     "nombre": "Arroz Gallo Oro 1kg",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 40
+    "stock": 39
   },
   {
     "id": 8,
@@ -67,7 +67,7 @@
     "nombre": "Arroz Gallo Oro 1kg",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 40
+    "stock": 38
   },
   {
     "id": 11,
@@ -88,7 +88,7 @@
     "nombre": "Fideos Tirabuzón 500g",
     "categoria": "Almacén",
     "precio": 1550.0,
-    "stock": 44
+    "stock": 42
   },
   {
     "id": 14,
@@ -102,7 +102,7 @@
     "nombre": "Harina 000 1kg",
     "categoria": "Almacén",
     "precio": 1200.0,
-    "stock": 50
+    "stock": 48
   },
   {
     "id": 16,
@@ -130,7 +130,7 @@
     "nombre": "Sal Fina 500g",
     "categoria": "Almacén",
     "precio": 900.0,
-    "stock": 60
+    "stock": 56
   },
   {
     "id": 20,
@@ -1177,6 +1177,1126 @@
   },
   {
     "id": 169,
+    "nombre": "Galletitas con Chips 400g",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 30
+  },
+  {
+    "id": 170,
+    "nombre": "Arroz Gallo Oro 1kg",
+    "categoria": "Almacén",
+    "precio": 1800.0,
+    "stock": 40
+  },
+  {
+    "id": 171,
+    "nombre": "Arroz Integral 1kg",
+    "categoria": "Almacén",
+    "precio": 2200.0,
+    "stock": 35
+  },
+  {
+    "id": 172,
+    "nombre": "Fideos Spaghetti 500g",
+    "categoria": "Almacén",
+    "precio": 1500.0,
+    "stock": 50
+  },
+  {
+    "id": 173,
+    "nombre": "Fideos Tirabuzón 500g",
+    "categoria": "Almacén",
+    "precio": 1550.0,
+    "stock": 45
+  },
+  {
+    "id": 174,
+    "nombre": "Fideos Mostacholes 500g",
+    "categoria": "Almacén",
+    "precio": 1500.0,
+    "stock": 42
+  },
+  {
+    "id": 175,
+    "nombre": "Harina 000 1kg",
+    "categoria": "Almacén",
+    "precio": 1200.0,
+    "stock": 50
+  },
+  {
+    "id": 176,
+    "nombre": "Harina 0000 1kg",
+    "categoria": "Almacén",
+    "precio": 1300.0,
+    "stock": 45
+  },
+  {
+    "id": 177,
+    "nombre": "Harina Integral 1kg",
+    "categoria": "Almacén",
+    "precio": 1800.0,
+    "stock": 30
+  },
+  {
+    "id": 178,
+    "nombre": "Azúcar 1kg",
+    "categoria": "Almacén",
+    "precio": 1400.0,
+    "stock": 55
+  },
+  {
+    "id": 179,
+    "nombre": "Sal Fina 500g",
+    "categoria": "Almacén",
+    "precio": 900.0,
+    "stock": 60
+  },
+  {
+    "id": 180,
+    "nombre": "Sal Gruesa 1kg",
+    "categoria": "Almacén",
+    "precio": 1100.0,
+    "stock": 40
+  },
+  {
+    "id": 181,
+    "nombre": "Polenta 500g",
+    "categoria": "Almacén",
+    "precio": 1200.0,
+    "stock": 35
+  },
+  {
+    "id": 182,
+    "nombre": "Lentejas 400g",
+    "categoria": "Almacén",
+    "precio": 1800.0,
+    "stock": 30
+  },
+  {
+    "id": 183,
+    "nombre": "Porotos 400g",
+    "categoria": "Almacén",
+    "precio": 1900.0,
+    "stock": 28
+  },
+  {
+    "id": 184,
+    "nombre": "Garbanzos 400g",
+    "categoria": "Almacén",
+    "precio": 2000.0,
+    "stock": 25
+  },
+  {
+    "id": 185,
+    "nombre": "Arvejas 350g",
+    "categoria": "Almacén",
+    "precio": 1300.0,
+    "stock": 35
+  },
+  {
+    "id": 186,
+    "nombre": "Atún al Natural 170g",
+    "categoria": "Almacén",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 187,
+    "nombre": "Atún en Aceite 170g",
+    "categoria": "Almacén",
+    "precio": 3000.0,
+    "stock": 32
+  },
+  {
+    "id": 188,
+    "nombre": "Tomate Triturado 520g",
+    "categoria": "Almacén",
+    "precio": 1600.0,
+    "stock": 45
+  },
+  {
+    "id": 189,
+    "nombre": "Puré de Tomate 520g",
+    "categoria": "Almacén",
+    "precio": 1500.0,
+    "stock": 50
+  },
+  {
+    "id": 190,
+    "nombre": "Mayonesa 500g",
+    "categoria": "Almacén",
+    "precio": 2800.0,
+    "stock": 35
+  },
+  {
+    "id": 191,
+    "nombre": "Ketchup 250g",
+    "categoria": "Almacén",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 192,
+    "nombre": "Mostaza 250g",
+    "categoria": "Almacén",
+    "precio": 1900.0,
+    "stock": 25
+  },
+  {
+    "id": 193,
+    "nombre": "Aceite de Girasol 900ml",
+    "categoria": "Almacén",
+    "precio": 3200.0,
+    "stock": 40
+  },
+  {
+    "id": 194,
+    "nombre": "Aceite de Oliva 500ml",
+    "categoria": "Almacén",
+    "precio": 6500.0,
+    "stock": 20
+  },
+  {
+    "id": 195,
+    "nombre": "Vinagre de Alcohol 500ml",
+    "categoria": "Almacén",
+    "precio": 1200.0,
+    "stock": 35
+  },
+  {
+    "id": 196,
+    "nombre": "Vinagre de Manzana 500ml",
+    "categoria": "Almacén",
+    "precio": 1800.0,
+    "stock": 25
+  },
+  {
+    "id": 197,
+    "nombre": "Caldo de Verduras",
+    "categoria": "Almacén",
+    "precio": 1300.0,
+    "stock": 40
+  },
+  {
+    "id": 198,
+    "nombre": "Caldo de Carne",
+    "categoria": "Almacén",
+    "precio": 1300.0,
+    "stock": 40
+  },
+  {
+    "id": 199,
+    "nombre": "Orégano 25g",
+    "categoria": "Almacén",
+    "precio": 1000.0,
+    "stock": 30
+  },
+  {
+    "id": 200,
+    "nombre": "Pimienta Negra 50g",
+    "categoria": "Almacén",
+    "precio": 1500.0,
+    "stock": 25
+  },
+  {
+    "id": 201,
+    "nombre": "Pimentón 50g",
+    "categoria": "Almacén",
+    "precio": 1300.0,
+    "stock": 30
+  },
+  {
+    "id": 202,
+    "nombre": "Avena Instantánea 500g",
+    "categoria": "Almacén",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 203,
+    "nombre": "Cacao en Polvo 180g",
+    "categoria": "Almacén",
+    "precio": 2500.0,
+    "stock": 25
+  },
+  {
+    "id": 204,
+    "nombre": "Café Molido 250g",
+    "categoria": "Almacén",
+    "precio": 4200.0,
+    "stock": 20
+  },
+  {
+    "id": 205,
+    "nombre": "Té en Saquitos 25u",
+    "categoria": "Almacén",
+    "precio": 1800.0,
+    "stock": 35
+  },
+  {
+    "id": 206,
+    "nombre": "Mate Cocido 25u",
+    "categoria": "Almacén",
+    "precio": 1600.0,
+    "stock": 35
+  },
+  {
+    "id": 207,
+    "nombre": "Mermelada de Durazno 454g",
+    "categoria": "Almacén",
+    "precio": 2600.0,
+    "stock": 25
+  },
+  {
+    "id": 208,
+    "nombre": "Mermelada de Frutilla 454g",
+    "categoria": "Almacén",
+    "precio": 2700.0,
+    "stock": 25
+  },
+  {
+    "id": 209,
+    "nombre": "Dulce de Leche 400g",
+    "categoria": "Almacén",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 210,
+    "nombre": "Agua Mineral 500ml",
+    "categoria": "Bebidas",
+    "precio": 1000.0,
+    "stock": 80
+  },
+  {
+    "id": 211,
+    "nombre": "Agua Mineral 1.5L",
+    "categoria": "Bebidas",
+    "precio": 1500.0,
+    "stock": 70
+  },
+  {
+    "id": 212,
+    "nombre": "Agua Mineral 2.25L",
+    "categoria": "Bebidas",
+    "precio": 1800.0,
+    "stock": 60
+  },
+  {
+    "id": 213,
+    "nombre": "Agua con Gas 500ml",
+    "categoria": "Bebidas",
+    "precio": 1100.0,
+    "stock": 70
+  },
+  {
+    "id": 214,
+    "nombre": "Agua con Gas 1.5L",
+    "categoria": "Bebidas",
+    "precio": 1600.0,
+    "stock": 60
+  },
+  {
+    "id": 215,
+    "nombre": "Gaseosa Cola 500ml",
+    "categoria": "Bebidas",
+    "precio": 1800.0,
+    "stock": 60
+  },
+  {
+    "id": 216,
+    "nombre": "Gaseosa Cola 1.5L",
+    "categoria": "Bebidas",
+    "precio": 3000.0,
+    "stock": 50
+  },
+  {
+    "id": 217,
+    "nombre": "Gaseosa Cola 2.25L",
+    "categoria": "Bebidas",
+    "precio": 3500.0,
+    "stock": 45
+  },
+  {
+    "id": 218,
+    "nombre": "Gaseosa Lima Limón 500ml",
+    "categoria": "Bebidas",
+    "precio": 1700.0,
+    "stock": 55
+  },
+  {
+    "id": 219,
+    "nombre": "Gaseosa Lima Limón 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2900.0,
+    "stock": 45
+  },
+  {
+    "id": 220,
+    "nombre": "Gaseosa Naranja 500ml",
+    "categoria": "Bebidas",
+    "precio": 1700.0,
+    "stock": 55
+  },
+  {
+    "id": 221,
+    "nombre": "Gaseosa Naranja 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2900.0,
+    "stock": 45
+  },
+  {
+    "id": 222,
+    "nombre": "Gaseosa Pomelo 500ml",
+    "categoria": "Bebidas",
+    "precio": 1700.0,
+    "stock": 50
+  },
+  {
+    "id": 223,
+    "nombre": "Gaseosa Pomelo 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2900.0,
+    "stock": 45
+  },
+  {
+    "id": 224,
+    "nombre": "Jugo de Naranja 1L",
+    "categoria": "Bebidas",
+    "precio": 2200.0,
+    "stock": 40
+  },
+  {
+    "id": 225,
+    "nombre": "Jugo de Durazno 1L",
+    "categoria": "Bebidas",
+    "precio": 2200.0,
+    "stock": 40
+  },
+  {
+    "id": 226,
+    "nombre": "Jugo Multifruta 1L",
+    "categoria": "Bebidas",
+    "precio": 2300.0,
+    "stock": 40
+  },
+  {
+    "id": 227,
+    "nombre": "Jugo en Polvo Naranja",
+    "categoria": "Bebidas",
+    "precio": 700.0,
+    "stock": 80
+  },
+  {
+    "id": 228,
+    "nombre": "Jugo en Polvo Manzana",
+    "categoria": "Bebidas",
+    "precio": 700.0,
+    "stock": 75
+  },
+  {
+    "id": 229,
+    "nombre": "Jugo en Polvo Multifruta",
+    "categoria": "Bebidas",
+    "precio": 700.0,
+    "stock": 75
+  },
+  {
+    "id": 230,
+    "nombre": "Agua Saborizada Limón 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2300.0,
+    "stock": 50
+  },
+  {
+    "id": 231,
+    "nombre": "Agua Saborizada Manzana 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2300.0,
+    "stock": 50
+  },
+  {
+    "id": 232,
+    "nombre": "Agua Saborizada Pomelo 1.5L",
+    "categoria": "Bebidas",
+    "precio": 2300.0,
+    "stock": 45
+  },
+  {
+    "id": 233,
+    "nombre": "Bebida Energizante 473ml",
+    "categoria": "Bebidas",
+    "precio": 2800.0,
+    "stock": 35
+  },
+  {
+    "id": 234,
+    "nombre": "Bebida Energizante 250ml",
+    "categoria": "Bebidas",
+    "precio": 1900.0,
+    "stock": 40
+  },
+  {
+    "id": 235,
+    "nombre": "Bebida Isotónica 500ml",
+    "categoria": "Bebidas",
+    "precio": 2200.0,
+    "stock": 45
+  },
+  {
+    "id": 236,
+    "nombre": "Bebida Isotónica 1L",
+    "categoria": "Bebidas",
+    "precio": 3000.0,
+    "stock": 35
+  },
+  {
+    "id": 237,
+    "nombre": "Té Helado 500ml",
+    "categoria": "Bebidas",
+    "precio": 1900.0,
+    "stock": 40
+  },
+  {
+    "id": 238,
+    "nombre": "Limonada 500ml",
+    "categoria": "Bebidas",
+    "precio": 1800.0,
+    "stock": 40
+  },
+  {
+    "id": 239,
+    "nombre": "Limonada 1L",
+    "categoria": "Bebidas",
+    "precio": 2600.0,
+    "stock": 35
+  },
+  {
+    "id": 240,
+    "nombre": "Café Frío 250ml",
+    "categoria": "Bebidas",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 241,
+    "nombre": "Leche Chocolatada 200ml",
+    "categoria": "Bebidas",
+    "precio": 1300.0,
+    "stock": 50
+  },
+  {
+    "id": 242,
+    "nombre": "Leche Chocolatada 1L",
+    "categoria": "Bebidas",
+    "precio": 2500.0,
+    "stock": 40
+  },
+  {
+    "id": 243,
+    "nombre": "Bebida de Soja 1L",
+    "categoria": "Bebidas",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 244,
+    "nombre": "Bebida de Almendras 1L",
+    "categoria": "Bebidas",
+    "precio": 4200.0,
+    "stock": 25
+  },
+  {
+    "id": 245,
+    "nombre": "Bebida de Avena 1L",
+    "categoria": "Bebidas",
+    "precio": 3500.0,
+    "stock": 25
+  },
+  {
+    "id": 246,
+    "nombre": "Soda 1.5L",
+    "categoria": "Bebidas",
+    "precio": 1400.0,
+    "stock": 50
+  },
+  {
+    "id": 247,
+    "nombre": "Soda 2L",
+    "categoria": "Bebidas",
+    "precio": 1600.0,
+    "stock": 45
+  },
+  {
+    "id": 248,
+    "nombre": "Agua Tónica 1L",
+    "categoria": "Bebidas",
+    "precio": 2300.0,
+    "stock": 35
+  },
+  {
+    "id": 249,
+    "nombre": "Agua Tónica 500ml",
+    "categoria": "Bebidas",
+    "precio": 1700.0,
+    "stock": 40
+  },
+  {
+    "id": 250,
+    "nombre": "Leche Entera 1L",
+    "categoria": "Lácteos",
+    "precio": 1200.0,
+    "stock": 50
+  },
+  {
+    "id": 251,
+    "nombre": "Leche Descremada 1L",
+    "categoria": "Lácteos",
+    "precio": 1250.0,
+    "stock": 45
+  },
+  {
+    "id": 252,
+    "nombre": "Leche Sin Lactosa 1L",
+    "categoria": "Lácteos",
+    "precio": 1800.0,
+    "stock": 35
+  },
+  {
+    "id": 253,
+    "nombre": "Leche Chocolatada 1L",
+    "categoria": "Lácteos",
+    "precio": 2500.0,
+    "stock": 40
+  },
+  {
+    "id": 254,
+    "nombre": "Leche en Polvo 400g",
+    "categoria": "Lácteos",
+    "precio": 4500.0,
+    "stock": 25
+  },
+  {
+    "id": 255,
+    "nombre": "Yogur Natural 190g",
+    "categoria": "Lácteos",
+    "precio": 1200.0,
+    "stock": 40
+  },
+  {
+    "id": 256,
+    "nombre": "Yogur de Frutilla 190g",
+    "categoria": "Lácteos",
+    "precio": 1300.0,
+    "stock": 45
+  },
+  {
+    "id": 257,
+    "nombre": "Yogur de Vainilla 190g",
+    "categoria": "Lácteos",
+    "precio": 1300.0,
+    "stock": 40
+  },
+  {
+    "id": 258,
+    "nombre": "Yogur de Durazno 190g",
+    "categoria": "Lácteos",
+    "precio": 1300.0,
+    "stock": 40
+  },
+  {
+    "id": 259,
+    "nombre": "Yogur Natural 1kg",
+    "categoria": "Lácteos",
+    "precio": 3200.0,
+    "stock": 30
+  },
+  {
+    "id": 260,
+    "nombre": "Yogur de Frutilla 1kg",
+    "categoria": "Lácteos",
+    "precio": 3500.0,
+    "stock": 30
+  },
+  {
+    "id": 261,
+    "nombre": "Yogur de Vainilla 1kg",
+    "categoria": "Lácteos",
+    "precio": 3500.0,
+    "stock": 30
+  },
+  {
+    "id": 262,
+    "nombre": "Yogur Bebible Frutilla",
+    "categoria": "Lácteos",
+    "precio": 1800.0,
+    "stock": 35
+  },
+  {
+    "id": 263,
+    "nombre": "Yogur Bebible Vainilla",
+    "categoria": "Lácteos",
+    "precio": 1800.0,
+    "stock": 35
+  },
+  {
+    "id": 264,
+    "nombre": "Queso Cremoso 500g",
+    "categoria": "Lácteos",
+    "precio": 5500.0,
+    "stock": 25
+  },
+  {
+    "id": 265,
+    "nombre": "Queso Cremoso 1kg",
+    "categoria": "Lácteos",
+    "precio": 9500.0,
+    "stock": 20
+  },
+  {
+    "id": 266,
+    "nombre": "Queso Pategrás 500g",
+    "categoria": "Lácteos",
+    "precio": 7000.0,
+    "stock": 20
+  },
+  {
+    "id": 267,
+    "nombre": "Queso Tybo 500g",
+    "categoria": "Lácteos",
+    "precio": 6500.0,
+    "stock": 22
+  },
+  {
+    "id": 268,
+    "nombre": "Queso Port Salut 500g",
+    "categoria": "Lácteos",
+    "precio": 6000.0,
+    "stock": 25
+  },
+  {
+    "id": 269,
+    "nombre": "Queso Azul 200g",
+    "categoria": "Lácteos",
+    "precio": 5000.0,
+    "stock": 15
+  },
+  {
+    "id": 270,
+    "nombre": "Queso Rallado 100g",
+    "categoria": "Lácteos",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 271,
+    "nombre": "Queso Rallado 200g",
+    "categoria": "Lácteos",
+    "precio": 3800.0,
+    "stock": 25
+  },
+  {
+    "id": 272,
+    "nombre": "Manteca 100g",
+    "categoria": "Lácteos",
+    "precio": 1800.0,
+    "stock": 35
+  },
+  {
+    "id": 273,
+    "nombre": "Manteca 200g",
+    "categoria": "Lácteos",
+    "precio": 3200.0,
+    "stock": 30
+  },
+  {
+    "id": 274,
+    "nombre": "Margarina 200g",
+    "categoria": "Lácteos",
+    "precio": 1800.0,
+    "stock": 30
+  },
+  {
+    "id": 275,
+    "nombre": "Crema de Leche 200ml",
+    "categoria": "Lácteos",
+    "precio": 2200.0,
+    "stock": 35
+  },
+  {
+    "id": 276,
+    "nombre": "Crema de Leche 500ml",
+    "categoria": "Lácteos",
+    "precio": 3800.0,
+    "stock": 25
+  },
+  {
+    "id": 277,
+    "nombre": "Crema Vegetal 200ml",
+    "categoria": "Lácteos",
+    "precio": 2500.0,
+    "stock": 25
+  },
+  {
+    "id": 278,
+    "nombre": "Ricota 500g",
+    "categoria": "Lácteos",
+    "precio": 3500.0,
+    "stock": 20
+  },
+  {
+    "id": 279,
+    "nombre": "Ricota 1kg",
+    "categoria": "Lácteos",
+    "precio": 6000.0,
+    "stock": 15
+  },
+  {
+    "id": 280,
+    "nombre": "Postre de Chocolate",
+    "categoria": "Lácteos",
+    "precio": 1500.0,
+    "stock": 35
+  },
+  {
+    "id": 281,
+    "nombre": "Postre de Vainilla",
+    "categoria": "Lácteos",
+    "precio": 1500.0,
+    "stock": 35
+  },
+  {
+    "id": 282,
+    "nombre": "Flan de Vainilla",
+    "categoria": "Lácteos",
+    "precio": 1600.0,
+    "stock": 30
+  },
+  {
+    "id": 283,
+    "nombre": "Flan de Chocolate",
+    "categoria": "Lácteos",
+    "precio": 1700.0,
+    "stock": 30
+  },
+  {
+    "id": 284,
+    "nombre": "Flan con Dulce de Leche",
+    "categoria": "Lácteos",
+    "precio": 1900.0,
+    "stock": 25
+  },
+  {
+    "id": 285,
+    "nombre": "Chocolatada 200ml",
+    "categoria": "Lácteos",
+    "precio": 1300.0,
+    "stock": 45
+  },
+  {
+    "id": 286,
+    "nombre": "Yogur Griego 150g",
+    "categoria": "Lácteos",
+    "precio": 2200.0,
+    "stock": 25
+  },
+  {
+    "id": 287,
+    "nombre": "Yogur Griego 500g",
+    "categoria": "Lácteos",
+    "precio": 4200.0,
+    "stock": 20
+  },
+  {
+    "id": 288,
+    "nombre": "Queso Untable 290g",
+    "categoria": "Lácteos",
+    "precio": 3000.0,
+    "stock": 30
+  },
+  {
+    "id": 289,
+    "nombre": "Queso Untable Light 290g",
+    "categoria": "Lácteos",
+    "precio": 3200.0,
+    "stock": 25
+  },
+  {
+    "id": 290,
+    "nombre": "Pan Lactal Blanco",
+    "categoria": "Panadería",
+    "precio": 2500.0,
+    "stock": 35
+  },
+  {
+    "id": 291,
+    "nombre": "Pan Lactal Integral",
+    "categoria": "Panadería",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 292,
+    "nombre": "Pan de Salvado",
+    "categoria": "Panadería",
+    "precio": 2700.0,
+    "stock": 30
+  },
+  {
+    "id": 293,
+    "nombre": "Pan de Campo",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 25
+  },
+  {
+    "id": 294,
+    "nombre": "Pan Francés 500g",
+    "categoria": "Panadería",
+    "precio": 1800.0,
+    "stock": 45
+  },
+  {
+    "id": 295,
+    "nombre": "Pan Francés 1kg",
+    "categoria": "Panadería",
+    "precio": 3200.0,
+    "stock": 40
+  },
+  {
+    "id": 296,
+    "nombre": "Pan Hamburguesa 4u",
+    "categoria": "Panadería",
+    "precio": 2200.0,
+    "stock": 35
+  },
+  {
+    "id": 297,
+    "nombre": "Pan Hamburguesa 6u",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 30
+  },
+  {
+    "id": 298,
+    "nombre": "Pan Panchos 6u",
+    "categoria": "Panadería",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 299,
+    "nombre": "Pan Panchos 12u",
+    "categoria": "Panadería",
+    "precio": 4800.0,
+    "stock": 25
+  },
+  {
+    "id": 300,
+    "nombre": "Pan de Molde Integral",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 30
+  },
+  {
+    "id": 301,
+    "nombre": "Pan de Molde Multicereal",
+    "categoria": "Panadería",
+    "precio": 3500.0,
+    "stock": 25
+  },
+  {
+    "id": 302,
+    "nombre": "Pan de Centeno",
+    "categoria": "Panadería",
+    "precio": 3800.0,
+    "stock": 20
+  },
+  {
+    "id": 303,
+    "nombre": "Pan Artesanal",
+    "categoria": "Panadería",
+    "precio": 3500.0,
+    "stock": 25
+  },
+  {
+    "id": 304,
+    "nombre": "Baguette",
+    "categoria": "Panadería",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 305,
+    "nombre": "Chipa 6u",
+    "categoria": "Panadería",
+    "precio": 2500.0,
+    "stock": 35
+  },
+  {
+    "id": 306,
+    "nombre": "Chipa 12u",
+    "categoria": "Panadería",
+    "precio": 4500.0,
+    "stock": 30
+  },
+  {
+    "id": 307,
+    "nombre": "Medialunas de Manteca 6u",
+    "categoria": "Panadería",
+    "precio": 3500.0,
+    "stock": 30
+  },
+  {
+    "id": 308,
+    "nombre": "Medialunas de Manteca 12u",
+    "categoria": "Panadería",
+    "precio": 6500.0,
+    "stock": 25
+  },
+  {
+    "id": 309,
+    "nombre": "Medialunas de Grasa 6u",
+    "categoria": "Panadería",
+    "precio": 3200.0,
+    "stock": 30
+  },
+  {
+    "id": 310,
+    "nombre": "Medialunas de Grasa 12u",
+    "categoria": "Panadería",
+    "precio": 6000.0,
+    "stock": 25
+  },
+  {
+    "id": 311,
+    "nombre": "Facturas Surtidas 6u",
+    "categoria": "Panadería",
+    "precio": 4000.0,
+    "stock": 30
+  },
+  {
+    "id": 312,
+    "nombre": "Facturas Surtidas 12u",
+    "categoria": "Panadería",
+    "precio": 7500.0,
+    "stock": 25
+  },
+  {
+    "id": 313,
+    "nombre": "Torta de Chocolate",
+    "categoria": "Panadería",
+    "precio": 8500.0,
+    "stock": 15
+  },
+  {
+    "id": 314,
+    "nombre": "Torta de Vainilla",
+    "categoria": "Panadería",
+    "precio": 7500.0,
+    "stock": 15
+  },
+  {
+    "id": 315,
+    "nombre": "Torta de Frutilla",
+    "categoria": "Panadería",
+    "precio": 9000.0,
+    "stock": 12
+  },
+  {
+    "id": 316,
+    "nombre": "Budín de Vainilla",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 25
+  },
+  {
+    "id": 317,
+    "nombre": "Budín de Chocolate",
+    "categoria": "Panadería",
+    "precio": 3500.0,
+    "stock": 25
+  },
+  {
+    "id": 318,
+    "nombre": "Budín Marmolado",
+    "categoria": "Panadería",
+    "precio": 3500.0,
+    "stock": 25
+  },
+  {
+    "id": 319,
+    "nombre": "Budín de Limón",
+    "categoria": "Panadería",
+    "precio": 3200.0,
+    "stock": 25
+  },
+  {
+    "id": 320,
+    "nombre": "Alfajor de Chocolate",
+    "categoria": "Panadería",
+    "precio": 1500.0,
+    "stock": 40
+  },
+  {
+    "id": 321,
+    "nombre": "Alfajor de Dulce de Leche",
+    "categoria": "Panadería",
+    "precio": 1500.0,
+    "stock": 40
+  },
+  {
+    "id": 322,
+    "nombre": "Alfajor Triple",
+    "categoria": "Panadería",
+    "precio": 2200.0,
+    "stock": 35
+  },
+  {
+    "id": 323,
+    "nombre": "Donas Glaseadas 4u",
+    "categoria": "Panadería",
+    "precio": 2800.0,
+    "stock": 30
+  },
+  {
+    "id": 324,
+    "nombre": "Donas de Chocolate 4u",
+    "categoria": "Panadería",
+    "precio": 3000.0,
+    "stock": 30
+  },
+  {
+    "id": 325,
+    "nombre": "Pepas 250g",
+    "categoria": "Panadería",
+    "precio": 2200.0,
+    "stock": 30
+  },
+  {
+    "id": 326,
+    "nombre": "Galletitas de Chocolate 400g",
+    "categoria": "Panadería",
+    "precio": 2500.0,
+    "stock": 35
+  },
+  {
+    "id": 327,
+    "nombre": "Galletitas de Vainilla 400g",
+    "categoria": "Panadería",
+    "precio": 2300.0,
+    "stock": 35
+  },
+  {
+    "id": 328,
+    "nombre": "Galletitas Integrales 400g",
+    "categoria": "Panadería",
+    "precio": 2700.0,
+    "stock": 30
+  },
+  {
+    "id": 329,
     "nombre": "Galletitas con Chips 400g",
     "categoria": "Panadería",
     "precio": 3000.0,

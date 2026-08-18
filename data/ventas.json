@@ -29,5 +29,74 @@
     ],
     "total": 8450.0,
     "metodo_pago": "Tarjeta"
+  },
+  {
+    "id": 2,
+    "cliente_id": 1,
+    "cliente_nombre": "Andres Oliva",
+    "fecha": "16/08/2026 13:13",
+    "productos": [
+      {
+        "id": 4,
+        "nombre": "Gaseosa cola",
+        "cantidad": 1,
+        "precio": 3000.0,
+        "subtotal": 3000.0
+      },
+      {
+        "id": 7,
+        "nombre": "Arroz Gallo Oro 1kg",
+        "cantidad": 1,
+        "precio": 1800.0,
+        "subtotal": 1800.0
+      },
+      {
+        "id": 10,
+        "nombre": "Arroz Gallo Oro 1kg",
+        "cantidad": 1,
+        "precio": 1800.0,
+        "subtotal": 1800.0
+      }
+    ],
+    "total": 6600.0,
+    "metodo_pago": "Tarjeta"
+  },
+  {
+    "id": 3,
+    "cliente_id": 1,
+    "cliente_nombre": "ruben dario",
+    "fecha": "17/08/2026 23:35",
+    "productos": [
+      {
+        "id": 10,
+        "nombre": "Arroz Gallo Oro 1kg",
+        "cantidad": 1,
+        "precio": 1800.0,
+        "subtotal": 1800.0
+      },
+      {
+        "id": 13,
+        "nombre": "Fideos Tirabuzón 500g",
+        "cantidad": 2,
+        "precio": 1550.0,
+        "subtotal": 3100.0
+      },
+      {
+        "id": 15,
+        "nombre": "Harina 000 1kg",
+        "cantidad": 2,
+        "precio": 1200.0,
+        "subtotal": 2400.0
+      },
+      {
+        "id": 19,
+        "nombre": "Sal Fina 500g",
+        "cantidad": 4,
+        "precio": 900.0,
+        "subtotal": 3600.0
+      }
+    ],
+    "total": 10900.0,
+    "metodo_pago": "Mercado Pago"
   }
 ]
