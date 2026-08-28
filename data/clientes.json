@@ -1,13 +1,14 @@
 [
   {
     "id": 1,
-    "nombre": "ruben",
-    "apellido": "dario",
-    "email": "andresitooliva88@gmail.com",
+    "nombre": "rafael",
+    "apellido": "marin",
+    "email": "ssss@gmail.com",
     "historial_compras": [
       1,
       2,
-      3
+      3,
+      4
     ]
   }
 ]

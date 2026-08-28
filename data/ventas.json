@@ -98,5 +98,29 @@
     ],
     "total": 10900.0,
     "metodo_pago": "Mercado Pago"
+  },
+  {
+    "id": 4,
+    "cliente_id": 1,
+    "cliente_nombre": "rafael marin",
+    "fecha": "23/08/2026 18:03",
+    "productos": [
+      {
+        "id": 320,
+        "nombre": "Alfajor de Chocolate",
+        "cantidad": 1,
+        "precio": 1500.0,
+        "subtotal": 1500.0
+      },
+      {
+        "id": 160,
+        "nombre": "Alfajor de Chocolate",
+        "cantidad": 1,
+        "precio": 1500.0,
+        "subtotal": 1500.0
+      }
+    ],
+    "total": 3000.0,
+    "metodo_pago": "Mercado Pago"
   }
 ]
