@@ -2,11 +2,6 @@ import json
 from pathlib import Path
 
 from logic.producto import Producto
-from data.conexion import (
-    obtener_productos,
-    sincronizar_productos_desde_json,
-    actualizar_productos
-)
 
 
 class Supermercado:
@@ -24,56 +19,26 @@ class Supermercado:
 
 
     def cargar_productos(self):
-        # Carga los productos desde MySQL y utiliza JSON como respaldo
+        # Carga los productos desde el archivo JSON
         if not self.ruta_archivo.exists():
-            self.ruta_archivo.parent.mkdir(
-                parents=True,
-                exist_ok=True
-            )
-            self.ruta_archivo.write_text(
-                "[]",
-                encoding="utf-8"
-            )
+            self.ruta_archivo.parent.mkdir(parents=True, exist_ok=True)
+            self.ruta_archivo.write_text("[]", encoding="utf-8")
 
-        try:
-            # MySQL es la fuente principal; JSON permite la carga inicial
-            sincronizar_productos_desde_json()
-            filas = obtener_productos()
+        with open(self.ruta_archivo, encoding="utf-8") as archivo:
+            datos = json.load(archivo)
 
-            # Convierte los datos obtenidos de MySQL en diccionarios
-            datos = [
-                {
-                    "id": fila[0],
-                    "nombre": fila[1],
-                    "categoria": fila[2],
-                    "precio": fila[3],
-                    "stock": fila[4]
-                }
-                for fila in filas
-            ]
-
-        except Exception:
-            # Si MySQL falla, utiliza los datos guardados en JSON
-            with open(
-                self.ruta_archivo,
-                encoding="utf-8"
-            ) as archivo:
-                datos = json.load(archivo)
-
-        # Vacía la lista antes de volver a cargar los productos
         self.productos.clear()
 
-        # Crea objetos Producto a partir de los datos obtenidos
         for dato in datos:
-            producto = Producto(
-                dato["id"],
-                dato["nombre"],
-                dato["categoria"],
-                dato["precio"],
-                dato["stock"]
+            self.productos.append(
+                Producto(
+                    dato["id"],
+                    dato["nombre"],
+                    dato["categoria"],
+                    dato["precio"],
+                    dato["stock"]
+                )
             )
-
-            self.productos.append(producto)
 
 
     def listar_productos(self):
@@ -147,10 +112,3 @@ class Supermercado:
                 ensure_ascii=False,
                 indent=2
             )
-
-        # También intenta actualizar los productos en MySQL
-        try:
-            actualizar_productos(self.productos)
-        except Exception:
-            # Si MySQL no está disponible, mantiene el JSON actualizado
-            pass
