@@ -47,6 +47,12 @@ class VentanaSupermercado:
         ventana.geometry("920x590")
         ventana.configure(bg="#F1F8E9")
 
+        # Pide confirmación antes de cerrar la aplicación
+        ventana.protocol(
+            "WM_DELETE_WINDOW",
+            self._al_cerrar
+        )
+
         # Carga de productos
         self.supermercado = Supermercado()
         self.supermercado.cargar_productos()
@@ -105,11 +111,16 @@ class VentanaSupermercado:
         # FILTROS
         # --------------------------------------------------
 
-        filtros = tk.Frame(
+        filtros = tk.LabelFrame(
             ventana,
-            bg="#F1F8E9"
+            text="Filtros de búsqueda",
+            bg="#F1F8E9",
+            fg="#2E7D32",
+            font=("Arial", 9, "bold"),
+            padx=10,
+            pady=8
         )
-        filtros.pack(pady=9)
+        filtros.pack(pady=9, padx=20, fill="x")
 
         tk.Label(
             filtros,
@@ -155,13 +166,28 @@ class VentanaSupermercado:
             lambda _e: self.filtrar_productos()
         )
 
+        # Filtro adicional: mostrar solo productos con stock disponible
+        self.solo_stock = tk.BooleanVar(value=False)
+
+        tk.Checkbutton(
+            filtros,
+            text="Solo con stock",
+            variable=self.solo_stock,
+            bg="#F1F8E9",
+            command=self.filtrar_productos
+        ).grid(
+            row=0,
+            column=4,
+            padx=8
+        )
+
         self._crear_boton_accion(
             filtros,
             "🧹 Limpiar filtros",
             self.limpiar_filtros
         ).grid(
             row=0,
-            column=4,
+            column=5,
             padx=8
         )
 
@@ -205,8 +231,19 @@ class VentanaSupermercado:
             "estado"
         )
 
-        self.tabla = ttk.Treeview(
+        contenedor_tabla = tk.Frame(
             ventana,
+            bg="#F1F8E9"
+        )
+        contenedor_tabla.pack(
+            padx=20,
+            pady=4,
+            fill="both",
+            expand=True
+        )
+
+        self.tabla = ttk.Treeview(
+            contenedor_tabla,
             columns=columnas,
             show="headings",
             height=13
@@ -249,10 +286,25 @@ class VentanaSupermercado:
             foreground="#B71C1C"
         )
 
+        scroll_tabla = tk.Scrollbar(
+            contenedor_tabla,
+            orient="vertical",
+            command=self.tabla.yview
+        )
+
+        self.tabla.config(
+            yscrollcommand=scroll_tabla.set
+        )
+
         self.tabla.pack(
-            padx=20,
-            pady=4,
-            fill="x"
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        scroll_tabla.pack(
+            side="right",
+            fill="y"
         )
 
         # --------------------------------------------------
@@ -596,6 +648,19 @@ class VentanaSupermercado:
         )
 
     # ------------------------------------------------------
+    # CERRAR APLICACIÓN
+    # ------------------------------------------------------
+
+    def _al_cerrar(self):
+
+        if messagebox.askyesno(
+            "Salir",
+            "¿Cerrar la aplicación?"
+        ):
+
+            self.ventana.destroy()
+
+    # ------------------------------------------------------
     # CLIENTE
     # ------------------------------------------------------
 
@@ -822,6 +887,8 @@ class VentanaSupermercado:
             self.categoria.get()
         )
 
+        solo_stock = self.solo_stock.get()
+
         productos_filtrados = [
             p
             for p in self.supermercado.productos
@@ -829,6 +896,10 @@ class VentanaSupermercado:
             and (
                 categoria == "Todas"
                 or p.categoria == categoria
+            )
+            and (
+                not solo_stock
+                or p.stock > 0
             )
         ]
 
@@ -846,6 +917,8 @@ class VentanaSupermercado:
         self.categoria.set(
             "Todas"
         )
+
+        self.solo_stock.set(False)
 
         self.mostrar_productos()
 
