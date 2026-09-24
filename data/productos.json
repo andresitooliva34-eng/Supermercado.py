@@ -18,20 +18,20 @@
     "nombre": "Arroz",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 18
+    "stock": 17
   },
   {
     "id": 4,
     "nombre": "Gaseosa cola",
     "categoria": "Bebidas",
     "precio": 3000.0,
-    "stock": 9
+    "stock": 8
   },
   {
     "id": 5,
     "nombre": "Cereales",
     "categoria": "Almacén",
-    "precio": 5700.0,
+    "precio": 5900.0,
     "stock": 46
   },
   {
@@ -39,35 +39,35 @@
     "nombre": "Fideos",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "id": 7,
     "nombre": "Arroz Gallo Oro 1kg",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 39
+    "stock": 38
   },
   {
     "id": 8,
     "nombre": "Arroz Integral 1kg",
     "categoria": "Almacén",
     "precio": 2200.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "id": 9,
     "nombre": "Fideos Spaghetti 500g",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 50
+    "stock": 43
   },
   {
     "id": 10,
     "nombre": "Arroz Gallo Oro 1kg",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 38
+    "stock": 36
   },
   {
     "id": 11,
@@ -81,21 +81,21 @@
     "nombre": "Fideos Spaghetti 500g",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 50
+    "stock": 47
   },
   {
     "id": 13,
     "nombre": "Fideos Tirabuzón 500g",
     "categoria": "Almacén",
     "precio": 1550.0,
-    "stock": 42
+    "stock": 41
   },
   {
     "id": 14,
     "nombre": "Fideos Mostacholes 500g",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 42
+    "stock": 41
   },
   {
     "id": 15,
@@ -109,7 +109,7 @@
     "nombre": "Harina 0000 1kg",
     "categoria": "Almacén",
     "precio": 1300.0,
-    "stock": 45
+    "stock": 42
   },
   {
     "id": 17,

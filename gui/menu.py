@@ -1,11 +1,12 @@
 import os
 import sys
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox, simpledialog, ttk
 
 from logic.carrito import Carrito
 from logic.cliente import Cliente
 from logic.pago import crear_pago
+from logic.producto import Producto
 from logic.repositorio import RepositorioJSON
 from logic.supermercado import Supermercado
 from logic.venta import Venta
@@ -13,6 +14,11 @@ from logic.venta import Venta
 from gui.exportador_historial import (
     exportar_historial_pdf,
     exportar_historial_excel
+)
+
+ROLES = (
+    "Administrador", "Gerente", "Supervisor", "Cajero",
+    "Repositor", "Vendedor"
 )
 
 
@@ -40,11 +46,12 @@ class VentanaSupermercado:
 
         # Configuración principal de la ventana
         self.ventana = ventana
-        ventana.title("Supermercado | Gestión de compras")
+        ventana.title("Supermercado | Caja y administración")
         ventana.iconbitmap(
             ruta_recurso("assets/supermercado_icon.ico")
         )
-        ventana.geometry("920x590")
+        ventana.geometry("1100x700")
+        ventana.minsize(980, 620)
         ventana.configure(bg="#F1F8E9")
 
         # Pide confirmación antes de cerrar la aplicación
@@ -63,6 +70,9 @@ class VentanaSupermercado:
         # Repositorios JSON
         self.repo_clientes = RepositorioJSON("clientes.json")
         self.repo_ventas = RepositorioJSON("ventas.json")
+        self.repo_empleados = RepositorioJSON("empleados.json")
+        self.repo_categorias = RepositorioJSON("categorias.json")
+        self.empleado_actual = None
 
         # Carga del cliente activo
         self.cliente = self.cargar_cliente()
@@ -76,7 +86,7 @@ class VentanaSupermercado:
 
         tk.Label(
             ventana,
-            text="🛒 SUPERMERCADO 🛒",
+            text="SUPERMERCADO | PUNTO DE VENTA",
             font=("Arial", 22, "bold"),
             bg="#F1F8E9",
             fg="#2E7D32"
@@ -84,7 +94,7 @@ class VentanaSupermercado:
 
         tk.Label(
             ventana,
-            text="Tu changuito de compras, más fácil",
+            text="Caja para registrar ventas y administrar el negocio",
             font=("Arial", 10, "italic"),
             bg="#F1F8E9",
             fg="#558B2F"
@@ -336,7 +346,7 @@ class VentanaSupermercado:
 
         botones_info = (
             (
-                "🛒 Agregar al carrito",
+                "Agregar producto",
                 self.agregar_al_carrito,
                 True
             ),
@@ -346,7 +356,7 @@ class VentanaSupermercado:
                 False
             ),
             (
-                "💳 Finalizar compra",
+                "Finalizar venta",
                 self.finalizar_compra,
                 False
             ),
@@ -356,7 +366,7 @@ class VentanaSupermercado:
                 False
             ),
             (
-                "👤 Cambiar cliente",
+                "Datos del cliente",
                 self.cambiar_cliente,
                 False
             ),
@@ -388,6 +398,7 @@ class VentanaSupermercado:
         self.actualizar_categorias()
         self.mostrar_productos()
         self.actualizar_estado()
+        self.ventana.after(150, self.iniciar_sesion)
 
     # ------------------------------------------------------
     # BOTONES
@@ -506,6 +517,10 @@ class VentanaSupermercado:
             menu=menu_archivo
         )
 
+        self.menu_administracion = tk.Menu(barra_menu, tearoff=0)
+        barra_menu.add_cascade(label="Administracion", menu=self.menu_administracion)
+        self._actualizar_menu_administracion()
+
         menu_acerca = tk.Menu(
             barra_menu,
             tearoff=0
@@ -520,6 +535,326 @@ class VentanaSupermercado:
             label="Acerca de",
             menu=menu_acerca
         )
+
+    def _empleados(self):
+        empleados = self.repo_empleados.cargar()
+        if not empleados:
+            empleados = [{
+                "id": 1, "nombre": "Administrador", "dni": "00000000",
+                "rol": "Administrador", "usuario": "admin",
+                "clave": "admin123", "activo": True
+            }]
+            self.repo_empleados.guardar(empleados)
+        return empleados
+
+    def _actualizar_menu_administracion(self):
+        self.menu_administracion.delete(0, tk.END)
+        if self.empleado_actual is None:
+            self.menu_administracion.add_command(label="Iniciar sesion", command=self.iniciar_sesion)
+            return
+        self.menu_administracion.add_command(
+            label=f"Sesion: {self.empleado_actual['nombre']} ({self.empleado_actual['rol']})",
+            state="disabled"
+        )
+        self.menu_administracion.add_separator()
+        self.menu_administracion.add_command(label="Cerrar sesion", command=self.cerrar_sesion)
+        rol = self.empleado_actual.get("rol")
+        if rol in ("Administrador", "Gerente", "Supervisor", "Repositor"):
+            self.menu_administracion.add_separator()
+            self.menu_administracion.add_command(label="ABM de Productos", command=self.gestionar_productos)
+        if rol in ("Administrador", "Gerente", "Supervisor"):
+            self.menu_administracion.add_command(label="ABM de Categorias", command=self.gestionar_categorias)
+        if rol in ("Administrador", "Gerente"):
+            self.menu_administracion.add_command(label="ABM de Empleados", command=self.gestionar_empleados)
+
+    def iniciar_sesion(self):
+        dialogo = tk.Toplevel(self.ventana)
+        dialogo.title("Inicio de sesion")
+        dialogo.resizable(False, False)
+        dialogo.transient(self.ventana)
+        entradas = []
+        for fila, etiqueta in enumerate(("Usuario", "Contrasena")):
+            tk.Label(dialogo, text=f"{etiqueta}:").grid(row=fila, column=0, padx=12, pady=7, sticky="e")
+            entrada = tk.Entry(dialogo, width=26, show="*" if fila == 1 else "")
+            entrada.grid(row=fila, column=1, padx=12, pady=7)
+            entradas.append(entrada)
+
+        def validar():
+            usuario, clave = (entrada.get().strip() for entrada in entradas)
+            empleado = next((e for e in self._empleados()
+                             if e.get("usuario") == usuario and e.get("clave") == clave
+                             and e.get("activo", True)), None)
+            if empleado is None:
+                messagebox.showerror("Acceso", "Usuario o contrasena invalidos.", parent=dialogo)
+                return
+            self.empleado_actual = empleado
+            self._actualizar_menu_administracion()
+            self.actualizar_cliente()
+            dialogo.destroy()
+
+        tk.Button(dialogo, text="Ingresar", command=validar).grid(row=2, column=0, columnspan=2, pady=10)
+        tk.Label(dialogo, text="Acceso inicial: admin / admin123").grid(row=3, column=0, columnspan=2, pady=(0, 10))
+        entradas[0].focus_set()
+        dialogo.bind("<Return>", lambda _evento: validar())
+        dialogo.grab_set()
+
+    def cerrar_sesion(self):
+        self.empleado_actual = None
+        self._actualizar_menu_administracion()
+        self.actualizar_cliente()
+
+    def _lista_categorias(self):
+        datos = self.repo_categorias.cargar()
+        nombres = sorted({p.categoria for p in self.supermercado.productos} |
+                         {d.get("nombre", "") for d in datos if d.get("nombre")})
+        existentes = {d.get("nombre") for d in datos}
+        siguiente = max((d.get("id", 0) for d in datos), default=0) + 1
+        for nombre in nombres:
+            if nombre and nombre not in existentes:
+                datos.append({"id": siguiente, "nombre": nombre})
+                siguiente += 1
+        if datos:
+            self.repo_categorias.guardar(datos)
+        return [d["nombre"] for d in datos if d.get("nombre")]
+
+    def gestionar_productos(self):
+        ventana = tk.Toplevel(self.ventana)
+        ventana.title("Administrar productos y stock")
+        ventana.geometry("760x430")
+        columnas = ("id", "nombre", "categoria", "precio", "stock")
+        tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
+        for clave, titulo, ancho in (
+            ("id", "ID", 55), ("nombre", "Producto", 230),
+            ("categoria", "Categoria", 150), ("precio", "Precio", 120),
+            ("stock", "Stock", 80)
+        ):
+            tabla.heading(clave, text=titulo)
+            tabla.column(clave, width=ancho)
+        tabla.pack(padx=12, pady=12, fill="both", expand=True)
+
+        def recargar():
+            tabla.delete(*tabla.get_children())
+            for producto in self.supermercado.productos:
+                tabla.insert("", "end", iid=str(producto.id), values=(
+                    producto.id, producto.nombre, producto.categoria,
+                    f"${producto.precio:,.2f}", producto.stock
+                ))
+
+        def formulario(producto=None):
+            dialogo = tk.Toplevel(ventana)
+            dialogo.title("Nuevo producto" if producto is None else "Editar producto")
+            categorias = self._lista_categorias()
+            valores = ("", categorias[0] if categorias else "", "0", "0") if producto is None else (
+                producto.nombre, producto.categoria, str(producto.precio), str(producto.stock)
+            )
+            controles = []
+            for fila, (etiqueta, valor) in enumerate(zip(("Nombre", "Categoria", "Precio", "Stock"), valores)):
+                tk.Label(dialogo, text=f"{etiqueta}:").grid(row=fila, column=0, padx=10, pady=6, sticky="e")
+                if etiqueta == "Categoria":
+                    control = ttk.Combobox(dialogo, values=categorias, state="readonly", width=27)
+                    control.set(valor)
+                else:
+                    control = tk.Entry(dialogo, width=30)
+                    control.insert(0, valor)
+                control.grid(row=fila, column=1, padx=10, pady=6)
+                controles.append(control)
+
+            def guardar():
+                nombre, categoria, precio_texto, stock_texto = (c.get().strip() for c in controles)
+                try:
+                    precio = float(precio_texto.replace(",", "."))
+                    stock = int(stock_texto)
+                    if not nombre or not categoria or precio < 0 or stock < 0:
+                        raise ValueError
+                except ValueError:
+                    messagebox.showerror("Producto", "Completá los campos con valores válidos.", parent=dialogo)
+                    return
+                if producto is None:
+                    producto_nuevo = Producto(self.supermercado.siguiente_id(), nombre, categoria, precio, stock)
+                    self.supermercado.agregar_producto(producto_nuevo)
+                else:
+                    producto.nombre, producto.categoria = nombre, categoria
+                    producto.precio, producto.stock = precio, stock
+                self.supermercado.guardar_productos()
+                self.actualizar_categorias()
+                self.mostrar_productos()
+                recargar()
+                dialogo.destroy()
+
+            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=4, column=0, columnspan=2, pady=10)
+
+        def editar():
+            seleccion = tabla.selection()
+            if seleccion:
+                formulario(self.supermercado.buscar_por_id(int(seleccion[0])))
+
+        def eliminar():
+            seleccion = tabla.selection()
+            if not seleccion:
+                return
+            if messagebox.askyesno("Productos", "Eliminar el producto seleccionado?", parent=ventana):
+                self.supermercado.eliminar_producto(int(seleccion[0]))
+                self.supermercado.guardar_productos()
+                self.actualizar_categorias()
+                self.mostrar_productos()
+                recargar()
+
+        botones = tk.Frame(ventana)
+        botones.pack(pady=(0, 12))
+        for texto, comando in (("Nuevo", formulario), ("Editar", editar), ("Eliminar", eliminar)):
+            tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
+        recargar()
+
+    def gestionar_categorias(self):
+        ventana = tk.Toplevel(self.ventana)
+        ventana.title("Administrar categorias")
+        ventana.geometry("420x360")
+        datos = self.repo_categorias.cargar()
+        self._lista_categorias()
+        datos = self.repo_categorias.cargar()
+        tabla = ttk.Treeview(ventana, columns=("id", "nombre"), show="headings")
+        tabla.heading("id", text="ID")
+        tabla.heading("nombre", text="Categoria")
+        tabla.pack(padx=12, pady=12, fill="both", expand=True)
+
+        def recargar():
+            tabla.delete(*tabla.get_children())
+            for item in datos:
+                tabla.insert("", "end", iid=str(item["id"]), values=(item["id"], item["nombre"]))
+
+        def editar(nueva=False):
+            seleccion = tabla.selection()
+            actual = None if nueva or not seleccion else next((d for d in datos if str(d["id"]) == seleccion[0]), None)
+            nombre = simpledialog.askstring("Categoria", "Nombre:", initialvalue="" if actual is None else actual["nombre"], parent=ventana)
+            if nombre is None:
+                return
+            nombre = nombre.strip()
+            if not nombre or any(d["nombre"].casefold() == nombre.casefold() and d is not actual for d in datos):
+                messagebox.showwarning("Categoria", "Ingresá un nombre nuevo y no vacío.", parent=ventana)
+                return
+            if actual is None:
+                datos.append({"id": max((d["id"] for d in datos), default=0) + 1, "nombre": nombre})
+            else:
+                anterior = actual["nombre"]
+                actual["nombre"] = nombre
+                for producto in self.supermercado.productos:
+                    if producto.categoria == anterior:
+                        producto.categoria = nombre
+                self.supermercado.guardar_productos()
+            self.repo_categorias.guardar(datos)
+            self.actualizar_categorias()
+            self.mostrar_productos()
+            recargar()
+
+        def eliminar():
+            seleccion = tabla.selection()
+            if not seleccion:
+                return
+            item = next(d for d in datos if str(d["id"]) == seleccion[0])
+            if any(p.categoria == item["nombre"] for p in self.supermercado.productos):
+                messagebox.showwarning("Categoria", "Hay productos que usan esta categoria.", parent=ventana)
+                return
+            datos.remove(item)
+            self.repo_categorias.guardar(datos)
+            self.actualizar_categorias()
+            recargar()
+
+        botones = tk.Frame(ventana)
+        botones.pack(pady=8)
+        for texto, comando in (("Nueva", lambda: editar(True)), ("Editar", editar), ("Eliminar", eliminar)):
+            tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
+        recargar()
+
+    def gestionar_empleados(self):
+        ventana = tk.Toplevel(self.ventana)
+        ventana.title("Administrar empleados")
+        ventana.geometry("780x420")
+        columnas = ("id", "nombre", "dni", "rol", "usuario", "activo")
+        tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
+        for clave, titulo, ancho in (
+            ("id", "ID", 45), ("nombre", "Nombre", 160), ("dni", "DNI", 95),
+            ("rol", "Rol", 125), ("usuario", "Usuario", 120), ("activo", "Activo", 70)
+        ):
+            tabla.heading(clave, text=titulo)
+            tabla.column(clave, width=ancho)
+        tabla.pack(padx=12, pady=12, fill="both", expand=True)
+
+        def recargar():
+            tabla.delete(*tabla.get_children())
+            for empleado in self._empleados():
+                tabla.insert("", "end", iid=str(empleado["id"]), values=(
+                    empleado["id"], empleado.get("nombre", ""), empleado.get("dni", ""),
+                    empleado.get("rol", ""), empleado.get("usuario", ""),
+                    "Sí" if empleado.get("activo", True) else "No"
+                ))
+
+        def formulario(empleado=None):
+            dialogo = tk.Toplevel(ventana)
+            dialogo.title("Nuevo empleado" if empleado is None else "Editar empleado")
+            valores = ("", "", ROLES[0], "", "") if empleado is None else (
+                empleado.get("nombre", ""), empleado.get("dni", ""), empleado.get("rol", ROLES[0]),
+                empleado.get("usuario", ""), empleado.get("clave", "")
+            )
+            controles = []
+            for fila, (etiqueta, valor) in enumerate(zip(("Nombre", "DNI", "Rol", "Usuario", "Contrasena"), valores)):
+                tk.Label(dialogo, text=f"{etiqueta}:").grid(row=fila, column=0, padx=10, pady=5, sticky="e")
+                if etiqueta == "Rol":
+                    control = ttk.Combobox(dialogo, values=ROLES, state="readonly", width=27)
+                    control.set(valor)
+                else:
+                    control = tk.Entry(dialogo, width=30, show="*" if etiqueta == "Contrasena" else "")
+                    control.insert(0, valor)
+                control.grid(row=fila, column=1, padx=10, pady=5)
+                controles.append(control)
+            activo = tk.BooleanVar(value=True if empleado is None else empleado.get("activo", True))
+            tk.Checkbutton(dialogo, text="Empleado activo", variable=activo).grid(row=5, column=0, columnspan=2)
+
+            def guardar():
+                nombre, dni, rol, usuario, clave = (c.get().strip() for c in controles)
+                empleados = self._empleados()
+                if not all((nombre, dni, rol, usuario, clave)):
+                    messagebox.showwarning("Empleados", "Completá todos los campos.", parent=dialogo)
+                    return
+                if any(e.get("usuario") == usuario and e is not empleado for e in empleados):
+                    messagebox.showwarning("Empleados", "Ese usuario ya está registrado.", parent=dialogo)
+                    return
+                registro = empleado
+                if registro is None:
+                    registro = {"id": max((e["id"] for e in empleados), default=0) + 1}
+                    empleados.append(registro)
+                registro.update({"nombre": nombre, "dni": dni, "rol": rol,
+                                 "usuario": usuario, "clave": clave, "activo": activo.get()})
+                self.repo_empleados.guardar(empleados)
+                recargar()
+                dialogo.destroy()
+
+            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=6, column=0, columnspan=2, pady=10)
+
+        def editar():
+            seleccion = tabla.selection()
+            if seleccion:
+                empleado = next(e for e in self._empleados() if str(e["id"]) == seleccion[0])
+                formulario(empleado)
+
+        def eliminar():
+            seleccion = tabla.selection()
+            if not seleccion:
+                return
+            empleados = self._empleados()
+            empleado = next(e for e in empleados if str(e["id"]) == seleccion[0])
+            if empleado.get("id") == self.empleado_actual.get("id"):
+                messagebox.showwarning("Empleados", "No podés eliminar tu propio usuario activo.", parent=ventana)
+                return
+            if messagebox.askyesno("Empleados", "Eliminar el empleado seleccionado?", parent=ventana):
+                empleados.remove(empleado)
+                self.repo_empleados.guardar(empleados)
+                recargar()
+
+        botones = tk.Frame(ventana)
+        botones.pack(pady=8)
+        for texto, comando in (("Nuevo", formulario), ("Editar", editar), ("Eliminar", eliminar)):
+            tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
+        recargar()
 
     # ------------------------------------------------------
     # ACERCA DE
@@ -560,7 +895,7 @@ class VentanaSupermercado:
 
         tk.Label(
             ventana_acerca,
-            text="Sistema de Gestión de Compras",
+            text="Caja y administración del supermercado",
             font=("Arial", 10, "italic"),
             bg="#F1F8E9",
             fg="#558B2F"
@@ -676,7 +1011,8 @@ class VentanaSupermercado:
                 d["id"],
                 d["nombre"],
                 d.get("apellido", ""),
-                d.get("email", "")
+                d.get("dni", ""),
+                d.get("telefono", "")
             )
 
             cliente.historial_compras = d.get(
@@ -691,6 +1027,7 @@ class VentanaSupermercado:
             1,
             "Cliente",
             "General",
+            "",
             ""
         )
 
@@ -706,9 +1043,10 @@ class VentanaSupermercado:
         )
 
     def actualizar_cliente(self):
+        cajero = self.empleado_actual.get("nombre", "") if self.empleado_actual else "Sin sesión"
         self.etiqueta_cliente.config(
             text=(
-                f"Cliente activo: "
+                f"Cajero: {cajero} | Cliente: "
                 f"{self.cliente.nombre_completo}"
             )
         )
@@ -733,7 +1071,8 @@ class VentanaSupermercado:
         datos_cliente = (
             ("Nombre", self.cliente.nombre),
             ("Apellido", self.cliente.apellido),
-            ("Email", self.cliente.email)
+            ("DNI", self.cliente.dni),
+            ("Teléfono", self.cliente.telefono)
         )
 
         for fila, (texto, valor) in enumerate(
@@ -792,9 +1131,11 @@ class VentanaSupermercado:
                 entradas[1].get().strip()
             )
 
-            self.cliente.email = (
+            self.cliente.dni = (
                 entradas[2].get().strip()
             )
+
+            self.cliente.telefono = entradas[3].get().strip()
 
             self.guardar_cliente()
             self.actualizar_cliente()
@@ -806,7 +1147,7 @@ class VentanaSupermercado:
             text="Guardar",
             command=guardar
         ).grid(
-            row=3,
+            row=4,
             column=0,
             columnspan=2,
             pady=10
@@ -993,7 +1334,7 @@ class VentanaSupermercado:
         )
 
         v.title(
-            "Mi carrito"
+            "Venta actual"
         )
 
         v.geometry(
@@ -1190,6 +1531,14 @@ class VentanaSupermercado:
 
     def finalizar_compra(self):
 
+        if self.empleado_actual is None:
+            messagebox.showwarning(
+                "Inicio de sesión",
+                "Iniciá sesión para registrar una venta."
+            )
+            self.iniciar_sesion()
+            return
+
         if not self.carrito.items:
 
             messagebox.showwarning(
@@ -1204,7 +1553,7 @@ class VentanaSupermercado:
         )
 
         d.title(
-            "Finalizar compra"
+            "Finalizar venta"
         )
 
         d.resizable(
@@ -1286,9 +1635,13 @@ class VentanaSupermercado:
                 metodo.get()
             )
 
+            datos_venta = venta.to_dict()
+            datos_venta["empleado_id"] = self.empleado_actual["id"]
+            datos_venta["empleado_nombre"] = self.empleado_actual["nombre"]
+
             # Guarda la venta
             datos.append(
-                venta.to_dict()
+                datos_venta
             )
 
             self.repo_ventas.guardar(
@@ -1321,7 +1674,7 @@ class VentanaSupermercado:
             )
 
             messagebox.showinfo(
-                "Compra realizada",
+                "Venta registrada",
                 (
                     f"Venta #{venta.id:03d} registrada.\n"
                     f"{resultado_pago}"
@@ -1351,7 +1704,7 @@ class VentanaSupermercado:
         )
 
         v.title(
-            "Historial de compras"
+            "Historial de ventas"
         )
 
         v.geometry(

@@ -3,12 +3,18 @@
     "id": 1,
     "nombre": "rafael",
     "apellido": "marin",
-    "email": "ssss@gmail.com",
+    "dni": "",
+    "telefono": "",
     "historial_compras": [
       1,
       2,
       3,
-      4
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
     ]
   }
 ]

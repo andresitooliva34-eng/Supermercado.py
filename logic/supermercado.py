@@ -83,6 +83,25 @@ class Supermercado:
         self.productos.append(producto)
 
 
+    def actualizar_producto(self, id_producto, nombre, categoria, precio, stock):
+        producto = self.buscar_por_id(int(id_producto))
+        if producto is None:
+            return False
+        producto.nombre = nombre
+        producto.categoria = categoria
+        producto.precio = float(precio)
+        producto.stock = int(stock)
+        return True
+
+
+    def eliminar_producto(self, id_producto):
+        producto = self.buscar_por_id(int(id_producto))
+        if producto is None:
+            return False
+        self.productos.remove(producto)
+        return True
+
+
     def siguiente_id(self):
         # Calcula el próximo ID disponible para un producto
         if not self.productos:
