@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "nombre": "Almacén"
+  },
+  {
+    "id": 2,
+    "nombre": "Bebidas"
+  },
+  {
+    "id": 3,
+    "nombre": "Lácteos"
+  },
+  {
+    "id": 4,
+    "nombre": "Panadería"
+  }
+]

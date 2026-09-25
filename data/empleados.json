@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "nombre": "Administrador",
+    "dni": "00000000",
+    "rol": "Administrador",
+    "usuario": "admin",
+    "clave": "admin123",
+    "activo": true
+  }
+]

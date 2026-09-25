@@ -1,11 +1,12 @@
 class Cliente:
     
-    def __init__(self, id, nombre, apellido="", email=""):
+    def __init__(self, id, nombre, apellido="", dni="", telefono=""):
         # Guarda los datos principales del cliente
         self.id = int(id)
         self.nombre = nombre
         self.apellido = apellido
-        self.email = email
+        self.dni = dni
+        self.telefono = telefono
 
         # Guarda los IDs de las compras realizadas
         self.historial_compras = []
@@ -28,6 +29,7 @@ class Cliente:
             "id": self.id,
             "nombre": self.nombre,
             "apellido": self.apellido,
-            "email": self.email,
+            "dni": self.dni,
+            "telefono": self.telefono,
             "historial_compras": self.historial_compras
         }
