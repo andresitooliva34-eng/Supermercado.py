@@ -9,6 +9,7 @@ from logic.pago import crear_pago
 from logic.producto import Producto
 from logic.repositorio import RepositorioJSON
 from logic.supermercado import Supermercado
+from logic.validaciones import dni_valido, limpiar_dni, telefono_valido
 from logic.venta import Venta
 
 from gui.exportador_historial import (
@@ -1123,6 +1124,31 @@ class VentanaSupermercado:
 
                 return
 
+            dni = limpiar_dni(entradas[2].get())
+            telefono = entradas[3].get().strip()
+
+            if not dni_valido(dni):
+
+                messagebox.showwarning(
+                    "Cliente",
+                    "El DNI tiene que tener 7 u 8 números, sin letras.",
+                    parent=v
+                )
+
+                entradas[2].focus_set()
+                return
+
+            if not telefono_valido(telefono):
+
+                messagebox.showwarning(
+                    "Cliente",
+                    "El teléfono solo puede tener números, espacios, +, - y paréntesis.",
+                    parent=v
+                )
+
+                entradas[3].focus_set()
+                return
+
             self.cliente.nombre = (
                 entradas[0].get().strip()
             )
@@ -1131,11 +1157,9 @@ class VentanaSupermercado:
                 entradas[1].get().strip()
             )
 
-            self.cliente.dni = (
-                entradas[2].get().strip()
-            )
+            self.cliente.dni = dni
 
-            self.cliente.telefono = entradas[3].get().strip()
+            self.cliente.telefono = telefono
 
             self.guardar_cliente()
             self.actualizar_cliente()
