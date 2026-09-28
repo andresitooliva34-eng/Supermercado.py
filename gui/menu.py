@@ -1734,6 +1734,8 @@ class VentanaSupermercado:
         v.geometry(
             "590x330"
         )
+        v.grab_set()   # Captura la interacción (bloquea la ventana principal)
+        v.focus_set()  # Le da el foco inicial a la nueva ventana
 
         tabla = ttk.Treeview(
             v,
