@@ -571,6 +571,13 @@ class VentanaSupermercado:
     def iniciar_sesion(self):
         dialogo = tk.Toplevel(self.ventana)
         dialogo.title("Inicio de sesion")
+
+        # Cierra la aplicación si el usuario cierra el login sin autenticarse
+        def _al_cerrar_login():
+            dialogo.destroy()
+            if self.empleado_actual is None:
+                self.ventana.destroy()
+        dialogo.protocol("WM_DELETE_WINDOW", _al_cerrar_login)
         dialogo.resizable(False, False)
         dialogo.transient(self.ventana)
         entradas = []
@@ -591,7 +598,9 @@ class VentanaSupermercado:
             self.empleado_actual = empleado
             self._actualizar_menu_administracion()
             self.actualizar_cliente()
+            dialogo.protocol("WM_DELETE_WINDOW", dialogo.destroy)
             dialogo.destroy()
+
 
         tk.Button(dialogo, text="Ingresar", command=validar).grid(row=2, column=0, columnspan=2, pady=10)
         tk.Label(dialogo, text="Acceso inicial: admin / admin123").grid(row=3, column=0, columnspan=2, pady=(0, 10))
