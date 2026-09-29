@@ -1121,9 +1121,7 @@ class VentanaSupermercado:
             entradas.append(
                 entrada
             )
-        v.after(10, v.grab_set)
-        v.focus_set()
-        self.ventana.wait_window(v)
+        
         def guardar():
 
             if not entradas[0].get().strip():
@@ -1188,7 +1186,9 @@ class VentanaSupermercado:
             columnspan=2,
             pady=10
         )
-
+        v.after(10, v.grab_set)
+        v.focus_set()
+        self.ventana.wait_window(v)
     # ------------------------------------------------------
     # PRODUCTOS
     # ------------------------------------------------------
@@ -1376,6 +1376,10 @@ class VentanaSupermercado:
         v.geometry(
             "610x400"
         )
+        v.transient(self.ventana) 
+        v.wait_visibility()
+        v.grab_set()               
+        v.focus_set()
 
         tabla = ttk.Treeview(
             v,
@@ -1561,7 +1565,8 @@ class VentanaSupermercado:
         )
 
         recargar()
-
+        self.ventana.wait_window(v)
+        
     # ------------------------------------------------------
     # FINALIZAR COMPRA
     # ------------------------------------------------------
