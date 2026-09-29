@@ -1075,7 +1075,8 @@ class VentanaSupermercado:
             False,
             False
         )
-
+        
+        v.transient(self.ventana)
         entradas = []
 
         datos_cliente = (
@@ -1120,7 +1121,9 @@ class VentanaSupermercado:
             entradas.append(
                 entrada
             )
-
+        v.after(10, v.grab_set)
+        v.focus_set()
+        self.ventana.wait_window(v)
         def guardar():
 
             if not entradas[0].get().strip():
@@ -1427,6 +1430,7 @@ class VentanaSupermercado:
         total.pack(
             pady=3
         )
+        
 
         def recargar():
 

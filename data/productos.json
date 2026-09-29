@@ -39,14 +39,14 @@
     "nombre": "Fideos",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "id": 7,
     "nombre": "Arroz Gallo Oro 1kg",
     "categoria": "Almacén",
     "precio": 1800.0,
-    "stock": 38
+    "stock": 37
   },
   {
     "id": 8,
@@ -60,7 +60,7 @@
     "nombre": "Fideos Spaghetti 500g",
     "categoria": "Almacén",
     "precio": 1500.0,
-    "stock": 43
+    "stock": 42
   },
   {
     "id": 10,

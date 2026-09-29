@@ -312,5 +312,38 @@
     "total": 4600.0,
     "metodo_pago": "Efectivo",
     "ruta_comprobante": "data\\facturas\\factura_2026-09-24_00-11-20.pdf"
+  },
+  {
+    "id": 10,
+    "cliente_id": 1,
+    "cliente_nombre": "rafael marin",
+    "fecha": "29/09/2026 16:13",
+    "productos": [
+      {
+        "id": 7,
+        "nombre": "Arroz Gallo Oro 1kg",
+        "cantidad": 1,
+        "precio": 1800.0,
+        "subtotal": 1800.0
+      },
+      {
+        "id": 9,
+        "nombre": "Fideos Spaghetti 500g",
+        "cantidad": 1,
+        "precio": 1500.0,
+        "subtotal": 1500.0
+      },
+      {
+        "id": 6,
+        "nombre": "Fideos",
+        "cantidad": 1,
+        "precio": 1500.0,
+        "subtotal": 1500.0
+      }
+    ],
+    "total": 4800.0,
+    "metodo_pago": "Efectivo",
+    "empleado_id": 1,
+    "empleado_nombre": "Administrador"
   }
 ]
