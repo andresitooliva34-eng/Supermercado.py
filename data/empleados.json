@@ -7,5 +7,32 @@
     "usuario": "admin",
     "clave": "admin123",
     "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "samuel",
+    "dni": "40518693",
+    "rol": "Gerente",
+    "usuario": "sam",
+    "clave": "123",
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "empleado1",
+    "dni": "40518694",
+    "rol": "Vendedor",
+    "usuario": "emp1",
+    "clave": "emp",
+    "activo": true
+  },
+  {
+    "id": 4,
+    "nombre": "empleado2",
+    "dni": "12345678",
+    "rol": "Repositor",
+    "usuario": "repo1",
+    "clave": "123",
+    "activo": true
   }
 ]

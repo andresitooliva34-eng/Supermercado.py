@@ -631,6 +631,7 @@ class VentanaSupermercado:
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar productos y stock")
         ventana.geometry("760x430")
+        ventana.transient(self.ventana) 
         columnas = ("id", "nombre", "categoria", "precio", "stock")
         tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
         for clave, titulo, ancho in (
@@ -653,6 +654,7 @@ class VentanaSupermercado:
         def formulario(producto=None):
             dialogo = tk.Toplevel(ventana)
             dialogo.title("Nuevo producto" if producto is None else "Editar producto")
+            dialogo.transient(ventana)
             categorias = self._lista_categorias()
             valores = ("", categorias[0] if categorias else "", "0", "0") if producto is None else (
                 producto.nombre, producto.categoria, str(producto.precio), str(producto.stock)
@@ -692,6 +694,8 @@ class VentanaSupermercado:
                 dialogo.destroy()
 
             tk.Button(dialogo, text="Guardar", command=guardar).grid(row=4, column=0, columnspan=2, pady=10)
+            dialogo.after(10, dialogo.grab_set)
+            dialogo.focus_set()
 
         def editar():
             seleccion = tabla.selection()
@@ -714,11 +718,16 @@ class VentanaSupermercado:
         for texto, comando in (("Nuevo", formulario), ("Editar", editar), ("Eliminar", eliminar)):
             tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
         recargar()
+        ventana.after(10, ventana.grab_set)
+        ventana.focus_set()
+        self.ventana.wait_window(ventana)  
+
 
     def gestionar_categorias(self):
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar categorias")
         ventana.geometry("420x360")
+        ventana.grab_set()
         datos = self.repo_categorias.cargar()
         self._lista_categorias()
         datos = self.repo_categorias.cargar()
@@ -779,6 +788,7 @@ class VentanaSupermercado:
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar empleados")
         ventana.geometry("780x420")
+        ventana.grab_set()
         columnas = ("id", "nombre", "dni", "rol", "usuario", "activo")
         tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
         for clave, titulo, ancho in (
@@ -791,6 +801,7 @@ class VentanaSupermercado:
 
         def recargar():
             tabla.delete(*tabla.get_children())
+            
             for empleado in self._empleados():
                 tabla.insert("", "end", iid=str(empleado["id"]), values=(
                     empleado["id"], empleado.get("nombre", ""), empleado.get("dni", ""),
@@ -801,6 +812,7 @@ class VentanaSupermercado:
         def formulario(empleado=None):
             dialogo = tk.Toplevel(ventana)
             dialogo.title("Nuevo empleado" if empleado is None else "Editar empleado")
+            dialogo.grab_set()
             valores = ("", "", ROLES[0], "", "") if empleado is None else (
                 empleado.get("nombre", ""), empleado.get("dni", ""), empleado.get("rol", ROLES[0]),
                 empleado.get("usuario", ""), empleado.get("clave", "")
@@ -842,9 +854,12 @@ class VentanaSupermercado:
 
         def editar():
             seleccion = tabla.selection()
+            
             if seleccion:
                 empleado = next(e for e in self._empleados() if str(e["id"]) == seleccion[0])
                 formulario(empleado)
+
+            tabla.grab_set()
 
         def eliminar():
             seleccion = tabla.selection()
@@ -1602,6 +1617,7 @@ class VentanaSupermercado:
             False,
             False
         )
+        d.grab_set()
 
         tk.Label(
             d,

@@ -345,5 +345,24 @@
     "metodo_pago": "Efectivo",
     "empleado_id": 1,
     "empleado_nombre": "Administrador"
+  },
+  {
+    "id": 11,
+    "cliente_id": 1,
+    "cliente_nombre": "rafael marin",
+    "fecha": "29/09/2026 18:33",
+    "productos": [
+      {
+        "id": 12,
+        "nombre": "Fideos Spaghetti 500g",
+        "cantidad": 2,
+        "precio": 1500.0,
+        "subtotal": 3000.0
+      }
+    ],
+    "total": 3000.0,
+    "metodo_pago": "Efectivo",
+    "empleado_id": 1,
+    "empleado_nombre": "Administrador"
   }
 ]
