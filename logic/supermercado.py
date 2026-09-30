@@ -70,9 +70,10 @@ class Supermercado:
 
 
     def buscar_por_id(self, id_producto):
-        # Busca un producto específico mediante su ID
+        # Busca un producto específico mediante su ID de forma segura
         for producto in self.productos:
-            if producto.id_producto == id_producto:
+            p_id = getattr(producto, "id", getattr(producto, "id_producto", None))
+            if p_id == id_producto:
                 return producto
 
         return None
@@ -108,8 +109,8 @@ class Supermercado:
             return 1
 
         return max(
-            producto.id_producto
-            for producto in self.productos
+            getattr(p, "id", getattr(p, "id_producto", 0))
+            for p in self.productos
         ) + 1
 
 
