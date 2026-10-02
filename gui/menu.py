@@ -837,20 +837,32 @@ class VentanaSupermercado:
                 if not all((nombre, dni, rol, usuario, clave)):
                     messagebox.showwarning("Empleados", "Completá todos los campos.", parent=dialogo)
                     return
-                if any(e.get("usuario") == usuario and e is not empleado for e in empleados):
+                id_editado = empleado["id"] if empleado else None
+                if any(e.get("usuario") == usuario and e["id"] != id_editado for e in empleados):
                     messagebox.showwarning("Empleados", "Ese usuario ya está registrado.", parent=dialogo)
                     return
-                registro = empleado
-                if registro is None:
+                if empleado is None:
                     registro = {"id": max((e["id"] for e in empleados), default=0) + 1}
                     empleados.append(registro)
-                registro.update({"nombre": nombre, "dni": dni, "rol": rol,
-                                 "usuario": usuario, "clave": clave, "activo": activo.get()})
+                else:
+                    registro = next(e for e in empleados if e["id"] == id_editado)
+                    registro.update({
+                        "nombre": nombre,
+                        "dni": dni,
+                        "rol": rol,
+                        "usuario": usuario,
+                        "clave": clave,
+                        "activo": activo.get()
+                    })
                 self.repo_empleados.guardar(empleados)
                 recargar()
                 dialogo.destroy()
 
-            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=6, column=0, columnspan=2, pady=10)
+            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=6, column=0, columnspan=2, pady=10)          
+            # Espera a que se cierre el formulario y le devuelve el bloqueo a la ventana del ABM
+            dialogo.wait_window()
+            if ventana.winfo_exists():
+                ventana.grab_set()
 
         def editar():
             seleccion = tabla.selection()
@@ -859,7 +871,6 @@ class VentanaSupermercado:
                 empleado = next(e for e in self._empleados() if str(e["id"]) == seleccion[0])
                 formulario(empleado)
 
-            tabla.grab_set()
 
         def eliminar():
             seleccion = tabla.selection()
