@@ -1653,23 +1653,30 @@ class VentanaSupermercado:
 
         def confirmar():
 
-            # Verifica y descuenta el stock
+            # 1. Verifica que alcance el stock de TODOS los productos
             for item in self.carrito.items:
 
                 producto = item["producto"]
                 cantidad = item["cantidad"]
 
-                if not producto.reducir_stock(
+                if not producto.hay_stock(
                     cantidad
                 ):
 
                     messagebox.showerror(
                         "Stock",
-                        "El stock cambió. Revisá el carrito.",
+                        f"No hay stock suficiente de {producto.nombre}. Revisá el carrito.",
                         parent=d
                     )
 
                     return
+
+            # 2. Recién ahora descuenta
+            for item in self.carrito.items:
+
+                item["producto"].reducir_stock(
+                    item["cantidad"]
+                )
 
             # Obtiene las ventas existentes
             datos = self.repo_ventas.cargar()
