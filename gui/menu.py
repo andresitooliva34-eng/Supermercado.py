@@ -577,6 +577,13 @@ class VentanaSupermercado:
     def iniciar_sesion(self):
         dialogo = tk.Toplevel(self.ventana)
         dialogo.title("Inicio de sesion")
+
+        # Cierra la aplicación si el usuario cierra el login sin autenticarse
+        def _al_cerrar_login():
+            dialogo.destroy()
+            if self.empleado_actual is None:
+                self.ventana.destroy()
+        dialogo.protocol("WM_DELETE_WINDOW", _al_cerrar_login)
         dialogo.resizable(False, False)
         dialogo.transient(self.ventana)
         entradas = []
@@ -597,7 +604,9 @@ class VentanaSupermercado:
             self.empleado_actual = empleado
             self._actualizar_menu_administracion()
             self.actualizar_cliente()
+            dialogo.protocol("WM_DELETE_WINDOW", dialogo.destroy)
             dialogo.destroy()
+
 
         tk.Button(dialogo, text="Ingresar", command=validar).grid(row=2, column=0, columnspan=2, pady=10)
         tk.Label(dialogo, text="Acceso inicial: admin / admin123").grid(row=3, column=0, columnspan=2, pady=(0, 10))
@@ -628,6 +637,7 @@ class VentanaSupermercado:
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar productos y stock")
         ventana.geometry("760x430")
+        ventana.transient(self.ventana) 
         columnas = ("id", "nombre", "categoria", "precio", "stock")
         tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
         for clave, titulo, ancho in (
@@ -650,6 +660,7 @@ class VentanaSupermercado:
         def formulario(producto=None):
             dialogo = tk.Toplevel(ventana)
             dialogo.title("Nuevo producto" if producto is None else "Editar producto")
+            dialogo.transient(ventana)
             categorias = self._lista_categorias()
             valores = ("", categorias[0] if categorias else "", "0", "0") if producto is None else (
                 producto.nombre, producto.categoria, str(producto.precio), str(producto.stock)
@@ -689,6 +700,8 @@ class VentanaSupermercado:
                 dialogo.destroy()
 
             tk.Button(dialogo, text="Guardar", command=guardar).grid(row=4, column=0, columnspan=2, pady=10)
+            dialogo.after(10, dialogo.grab_set)
+            dialogo.focus_set()
 
         def editar():
             seleccion = tabla.selection()
@@ -711,11 +724,16 @@ class VentanaSupermercado:
         for texto, comando in (("Nuevo", formulario), ("Editar", editar), ("Eliminar", eliminar)):
             tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
         recargar()
+        ventana.after(10, ventana.grab_set)
+        ventana.focus_set()
+        self.ventana.wait_window(ventana)  
+
 
     def gestionar_categorias(self):
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar categorias")
         ventana.geometry("420x360")
+        ventana.grab_set()
         datos = self.repo_categorias.cargar()
         self._lista_categorias()
         datos = self.repo_categorias.cargar()
@@ -776,6 +794,7 @@ class VentanaSupermercado:
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar empleados")
         ventana.geometry("780x420")
+        ventana.grab_set()
         columnas = ("id", "nombre", "dni", "rol", "usuario", "activo")
         tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
         for clave, titulo, ancho in (
@@ -788,6 +807,7 @@ class VentanaSupermercado:
 
         def recargar():
             tabla.delete(*tabla.get_children())
+            
             for empleado in self._empleados():
                 tabla.insert("", "end", iid=str(empleado["id"]), values=(
                     empleado["id"], empleado.get("nombre", ""), empleado.get("dni", ""),
@@ -798,6 +818,7 @@ class VentanaSupermercado:
         def formulario(empleado=None):
             dialogo = tk.Toplevel(ventana)
             dialogo.title("Nuevo empleado" if empleado is None else "Editar empleado")
+            dialogo.grab_set()
             valores = ("", "", ROLES[0], "", "") if empleado is None else (
                 empleado.get("nombre", ""), empleado.get("dni", ""), empleado.get("rol", ROLES[0]),
                 empleado.get("usuario", ""), empleado.get("clave", "")
@@ -822,26 +843,40 @@ class VentanaSupermercado:
                 if not all((nombre, dni, rol, usuario, clave)):
                     messagebox.showwarning("Empleados", "Completá todos los campos.", parent=dialogo)
                     return
-                if any(e.get("usuario") == usuario and e is not empleado for e in empleados):
+                id_editado = empleado["id"] if empleado else None
+                if any(e.get("usuario") == usuario and e["id"] != id_editado for e in empleados):
                     messagebox.showwarning("Empleados", "Ese usuario ya está registrado.", parent=dialogo)
                     return
-                registro = empleado
-                if registro is None:
+                if empleado is None:
                     registro = {"id": max((e["id"] for e in empleados), default=0) + 1}
                     empleados.append(registro)
-                registro.update({"nombre": nombre, "dni": dni, "rol": rol,
-                                 "usuario": usuario, "clave": clave, "activo": activo.get()})
+                else:
+                    registro = next(e for e in empleados if e["id"] == id_editado)
+                    registro.update({
+                        "nombre": nombre,
+                        "dni": dni,
+                        "rol": rol,
+                        "usuario": usuario,
+                        "clave": clave,
+                        "activo": activo.get()
+                    })
                 self.repo_empleados.guardar(empleados)
                 recargar()
                 dialogo.destroy()
 
-            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=6, column=0, columnspan=2, pady=10)
+            tk.Button(dialogo, text="Guardar", command=guardar).grid(row=6, column=0, columnspan=2, pady=10)          
+            # Espera a que se cierre el formulario y le devuelve el bloqueo a la ventana del ABM
+            dialogo.wait_window()
+            if ventana.winfo_exists():
+                ventana.grab_set()
 
         def editar():
             seleccion = tabla.selection()
+            
             if seleccion:
                 empleado = next(e for e in self._empleados() if str(e["id"]) == seleccion[0])
                 formulario(empleado)
+
 
         def eliminar():
             seleccion = tabla.selection()
@@ -1072,7 +1107,8 @@ class VentanaSupermercado:
             False,
             False
         )
-
+        
+        v.transient(self.ventana)
         entradas = []
 
         datos_cliente = (
@@ -1117,7 +1153,7 @@ class VentanaSupermercado:
             entradas.append(
                 entrada
             )
-
+        
         def guardar():
 
             if not entradas[0].get().strip():
@@ -1182,7 +1218,9 @@ class VentanaSupermercado:
             columnspan=2,
             pady=10
         )
-
+        v.after(10, v.grab_set)
+        v.focus_set()
+        self.ventana.wait_window(v)
     # ------------------------------------------------------
     # PRODUCTOS
     # ------------------------------------------------------
@@ -1370,6 +1408,10 @@ class VentanaSupermercado:
         v.geometry(
             "610x400"
         )
+        v.transient(self.ventana) 
+        v.wait_visibility()
+        v.grab_set()               
+        v.focus_set()
 
         tabla = ttk.Treeview(
             v,
@@ -1424,6 +1466,7 @@ class VentanaSupermercado:
         total.pack(
             pady=3
         )
+        
 
         def recargar():
 
@@ -1554,7 +1597,8 @@ class VentanaSupermercado:
         )
 
         recargar()
-
+        self.ventana.wait_window(v)
+        
     # ------------------------------------------------------
     # FINALIZAR COMPRA
     # ------------------------------------------------------
@@ -1590,6 +1634,7 @@ class VentanaSupermercado:
             False,
             False
         )
+        d.grab_set()
 
         tk.Label(
             d,
@@ -1625,23 +1670,30 @@ class VentanaSupermercado:
 
         def confirmar():
 
-            # Verifica y descuenta el stock
+            # 1. Verifica que alcance el stock de TODOS los productos
             for item in self.carrito.items:
 
                 producto = item["producto"]
                 cantidad = item["cantidad"]
 
-                if not producto.reducir_stock(
+                if not producto.hay_stock(
                     cantidad
                 ):
 
                     messagebox.showerror(
                         "Stock",
-                        "El stock cambió. Revisá el carrito.",
+                        f"No hay stock suficiente de {producto.nombre}. Revisá el carrito.",
                         parent=d
                     )
 
                     return
+
+            # 2. Recién ahora descuenta
+            for item in self.carrito.items:
+
+                item["producto"].reducir_stock(
+                    item["cantidad"]
+                )
 
             # Obtiene las ventas existentes
             datos = self.repo_ventas.cargar()
@@ -1740,6 +1792,7 @@ class VentanaSupermercado:
         v.geometry(
             "590x330"
         )
+        v.transient(self.ventana)
         v.grab_set()   # Captura la interacción (bloquea la ventana principal)
         v.focus_set()  # Le da el foco inicial a la nueva ventana
 
