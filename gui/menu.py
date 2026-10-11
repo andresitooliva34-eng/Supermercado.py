@@ -16,6 +16,7 @@ from gui.exportador_historial import (
     exportar_historial_pdf,
     exportar_historial_excel
 )
+from gui.ventana_productos import VentanaProductos
 
 ROLES = (
     "Administrador", "Gerente", "Supervisor", "Cajero",
@@ -504,6 +505,11 @@ class VentanaSupermercado:
                     self.ventana,
                     self.repo_ventas.cargar()
                 )
+        )
+
+        menu_archivo.add_command(
+            label="Productos (MySQL)",
+            command=lambda: VentanaProductos(self.ventana)
         )
 
         menu_archivo.add_separator()

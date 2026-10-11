@@ -4,3 +4,4 @@ venv/
 env/
 .vscode/
 *.log
+data/config_db.json
