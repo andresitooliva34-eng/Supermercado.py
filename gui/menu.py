@@ -989,9 +989,9 @@ class VentanaSupermercado:
             "Lozano Bazán, Facundo Nicolás",
             "Marín Silva, Rafael Alejandro",
             "Oliva Ruiz, Roberto Andrés",
-            "Roldán, Gabriel",
+            
             "Saravia, Samuel Eric",
-            "Espeche, Brenda Aylen",
+            
         ]
 
         for nombre in integrantes:
