@@ -8,7 +8,7 @@ from logic.repositorio_productos import RepositorioProductosMySQL
 
 class VentanaProductos(tk.Toplevel):
     """
-    Ventana secundaria para trabajar con la tabla productos de MySQL:
+    Ventana secundaria para trabajar con la tabla producto de MySQL:
     - Arriba: formulario de ALTA.
     - Abajo: buscador + tabla de CONSULTA.
     """
@@ -48,17 +48,12 @@ class VentanaProductos(tk.Toplevel):
         marco.pack(fill="x", padx=15, pady=(15, 8))
 
         # grid: etiquetas y campos alineados en filas y columnas
-        tk.Label(marco, text="Código:", bg="#F1F8E9").grid(
+        tk.Label(marco, text="Nombre:", bg="#F1F8E9").grid(
             row=0, column=0, padx=8, pady=6, sticky="e"
         )
-        self.entrada_codigo = tk.Entry(marco, width=18)
-        self.entrada_codigo.grid(row=0, column=1, padx=8, pady=6)
-
-        tk.Label(marco, text="Nombre:", bg="#F1F8E9").grid(
-            row=0, column=2, padx=8, pady=6, sticky="e"
-        )
-        self.entrada_nombre = tk.Entry(marco, width=30)
-        self.entrada_nombre.grid(row=0, column=3, padx=8, pady=6)
+        self.entrada_nombre = tk.Entry(marco, width=34)
+        self.entrada_nombre.grid(row=0, column=1, columnspan=3,
+                                 padx=8, pady=6, sticky="w")
 
         tk.Label(marco, text="Precio:", bg="#F1F8E9").grid(
             row=1, column=0, padx=8, pady=6, sticky="e"
@@ -104,7 +99,7 @@ class VentanaProductos(tk.Toplevel):
         barra.pack(fill="x", padx=15, pady=(8, 4))
 
         tk.Label(
-            barra, text="🔎 Buscar por nombre o código:", bg="#F1F8E9"
+            barra, text="🔎 Buscar por nombre o ID:", bg="#F1F8E9"
         ).pack(side="left")
 
         self.entrada_busqueda = tk.Entry(barra, width=28)
@@ -115,21 +110,18 @@ class VentanaProductos(tk.Toplevel):
             "<KeyRelease>", lambda _e: self.consultar()
         )
 
-        columnas = (
-            "id", "codigo", "nombre", "categoria", "precio", "stock"
-        )
+        columnas = ("id", "nombre", "categoria", "precio", "stock")
 
         self.tabla = ttk.Treeview(
             self, columns=columnas, show="headings", height=14
         )
 
         encabezados = (
-            ("id", "ID", 45, "center"),
-            ("codigo", "Código", 90, "center"),
-            ("nombre", "Producto", 240, "w"),
-            ("categoria", "Categoría", 120, "w"),
-            ("precio", "Precio", 100, "e"),
-            ("stock", "Stock", 70, "center"),
+            ("id", "ID", 55, "center"),
+            ("nombre", "Producto", 280, "w"),
+            ("categoria", "Categoría", 140, "w"),
+            ("precio", "Precio", 110, "e"),
+            ("stock", "Stock", 80, "center"),
         )
 
         for clave, texto, ancho, alineacion in encabezados:
@@ -147,7 +139,7 @@ class VentanaProductos(tk.Toplevel):
         # Llena el Combobox con las categorías que hay en la base
         try:
             filas = self.repo.listar_categorias()
-        except Error as error:
+        except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos",
                 f"No se pudieron cargar las categorías:\n{error}",
@@ -168,7 +160,7 @@ class VentanaProductos(tk.Toplevel):
 
         try:
             filas = self.repo.listar_productos(texto)
-        except Error as error:
+        except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos",
                 f"No se pudo consultar:\n{error}",
@@ -178,12 +170,12 @@ class VentanaProductos(tk.Toplevel):
 
         self.tabla.delete(*self.tabla.get_children())
 
-        for id_p, codigo, nombre, categoria, precio, stock in filas:
+        for id_p, nombre, categoria, precio, stock in filas:
             self.tabla.insert(
                 "",
                 "end",
                 values=(
-                    id_p, codigo, nombre, categoria,
+                    id_p, nombre, categoria,
                     f"${precio:,.2f}", stock
                 )
             )
@@ -216,7 +208,6 @@ class VentanaProductos(tk.Toplevel):
 
         try:
             self.repo.agregar_producto(
-                self.entrada_codigo.get(),
                 self.entrada_nombre.get(),
                 precio,
                 stock,
@@ -224,7 +215,7 @@ class VentanaProductos(tk.Toplevel):
             )
 
         except ValueError as error:
-            # Error de validación o regla de la base (código repetido)
+            # Error de validación o regla de la base
             messagebox.showwarning("Atención", str(error), parent=self)
             return
 
@@ -242,8 +233,7 @@ class VentanaProductos(tk.Toplevel):
 
         # Limpia el formulario y refresca la tabla
         for entrada in (
-            self.entrada_codigo, self.entrada_nombre,
-            self.entrada_precio, self.entrada_stock
+            self.entrada_nombre, self.entrada_precio, self.entrada_stock
         ):
             entrada.delete(0, tk.END)
 
