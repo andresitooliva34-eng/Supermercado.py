@@ -103,6 +103,23 @@ El diseño completo de la base (categorías, productos, clientes, empleados, ven
 - OpenPyXL (exportación a Excel)
 - Git y GitHub
 
+## 🗃️ CRUD de productos en MySQL
+
+Desde **Archivo → Productos (MySQL)** se abre una ventana que permite
+guardar, buscar, modificar y eliminar productos. Al seleccionar una fila,
+sus datos se cargan en el formulario para poder editarla.
+
+Las operaciones SQL están separadas de la interfaz en
+`logic/repositorio_productos.py` y usan las tablas existentes
+`producto` y `categoria` de la base `codemarket`. La configuración de conexión
+se lee desde `data/config_db.json`; para prepararla, copiá
+`data/config_db.example.json` a ese nombre y completá los datos locales de MySQL.
+
+El CRUD utiliza las columnas definidas en `data/schema.sql`; ese esquema no
+incluye un campo de código para los productos. El script elimina y recrea la
+base `codemarket`, por lo que no debe ejecutarse de nuevo si se quieren
+conservar los datos cargados.
+
 ##  Estructura del proyecto
 
 ```text
