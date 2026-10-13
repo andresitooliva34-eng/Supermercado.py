@@ -17,7 +17,7 @@
 -- =====================================================================
 
 DROP DATABASE IF EXISTS codemarket;
-CREATE DATABASE codemarket
+CREATE DATABASE IF NOT EXISTS codemarket
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 USE codemarket;
