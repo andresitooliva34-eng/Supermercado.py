@@ -18,6 +18,17 @@ class VentanaProductos(tk.Toplevel):
         self.configure(bg="#F1F8E9")
 
         self.repo = RepositorioProductosMySQL()
+        try:
+            self.tiene_codigo = self.repo.tiene_codigo()
+        except (Error, FileNotFoundError) as error:
+            messagebox.showerror(
+                "Base de datos",
+                f"No se pudo revisar el esquema de productos:\n{error}",
+                parent=self
+            )
+            self.destroy()
+            return
+
         self.categorias = {}
         self.id_producto_seleccionado = None
 
@@ -36,12 +47,20 @@ class VentanaProductos(tk.Toplevel):
         )
         marco.pack(fill="x", padx=15, pady=(15, 8))
 
-        tk.Label(marco, text="Nombre:", bg="#F1F8E9").grid(
+        tk.Label(marco, text="Código:", bg="#F1F8E9").grid(
             row=0, column=0, padx=8, pady=6, sticky="e"
+        )
+        self.entrada_codigo = tk.Entry(marco, width=18)
+        self.entrada_codigo.grid(row=0, column=1, padx=8, pady=6)
+        if not self.tiene_codigo:
+            self.entrada_codigo.configure(state="disabled")
+
+        tk.Label(marco, text="Nombre:", bg="#F1F8E9").grid(
+            row=0, column=2, padx=8, pady=6, sticky="e"
         )
         self.entrada_nombre = tk.Entry(marco, width=34)
         self.entrada_nombre.grid(
-            row=0, column=1, columnspan=3, padx=8, pady=6, sticky="w"
+            row=0, column=3, padx=8, pady=6, sticky="w"
         )
 
         tk.Label(marco, text="Precio:", bg="#F1F8E9").grid(
@@ -117,16 +136,17 @@ class VentanaProductos(tk.Toplevel):
             barra, "Ver todos", self.mostrar_todos, "#616161"
         ).pack(side="left", padx=5)
 
-        columnas = ("id", "nombre", "categoria", "precio", "stock")
+        columnas = ("id", "codigo", "nombre", "categoria", "precio", "stock")
         self.tabla = ttk.Treeview(
             self, columns=columnas, show="headings", height=14
         )
         encabezados = (
             ("id", "ID", 55, "center"),
-            ("nombre", "Producto", 280, "w"),
-            ("categoria", "Categoría", 140, "w"),
-            ("precio", "Precio", 110, "e"),
-            ("stock", "Stock", 80, "center"),
+            ("codigo", "Código", 95, "center"),
+            ("nombre", "Producto", 220, "w"),
+            ("categoria", "Categoría", 130, "w"),
+            ("precio", "Precio", 100, "e"),
+            ("stock", "Stock", 70, "center"),
         )
         for clave, texto, ancho, alineacion in encabezados:
             self.tabla.heading(clave, text=texto)
@@ -164,12 +184,13 @@ class VentanaProductos(tk.Toplevel):
             return
 
         self.tabla.delete(*self.tabla.get_children())
-        for id_producto, nombre, categoria, precio, stock in filas:
+        for id_producto, codigo, nombre, categoria, precio, stock in filas:
             self.tabla.insert(
                 "",
                 "end",
                 values=(
                     id_producto,
+                    codigo or "",
                     nombre,
                     categoria,
                     f"${float(precio):,.2f}",
@@ -178,6 +199,13 @@ class VentanaProductos(tk.Toplevel):
             )
 
     def _obtener_datos_formulario(self):
+        codigo = self.entrada_codigo.get().strip()
+        if self.tiene_codigo and not codigo:
+            messagebox.showwarning(
+                "Datos inválidos", "El código es obligatorio.", parent=self
+            )
+            return None
+
         try:
             precio = float(self.entrada_precio.get().replace(",", "."))
             stock = int(self.entrada_stock.get())
@@ -197,6 +225,7 @@ class VentanaProductos(tk.Toplevel):
             return None
 
         return (
+            codigo,
             self.entrada_nombre.get(),
             precio,
             stock,
@@ -232,16 +261,20 @@ class VentanaProductos(tk.Toplevel):
 
         valores = self.tabla.item(seleccion[0], "values")
         self.id_producto_seleccionado = int(valores[0])
+        if self.tiene_codigo:
+            self.entrada_codigo.delete(0, tk.END)
+            self.entrada_codigo.insert(0, valores[1])
+
         for entrada, valor in (
-            (self.entrada_nombre, valores[1]),
-            (self.entrada_precio, str(valores[3]).replace("$", "").replace(",", "")),
-            (self.entrada_stock, valores[4])
+            (self.entrada_nombre, valores[2]),
+            (self.entrada_precio, str(valores[4]).replace("$", "").replace(",", "")),
+            (self.entrada_stock, valores[5])
         ):
             entrada.delete(0, tk.END)
             entrada.insert(0, valor)
 
-        if valores[2] in self.categorias:
-            self.combo_categoria.set(valores[2])
+        if valores[3] in self.categorias:
+            self.combo_categoria.set(valores[3])
 
     def modificar(self):
         if self.id_producto_seleccionado is None:
@@ -304,6 +337,8 @@ class VentanaProductos(tk.Toplevel):
 
     def limpiar_formulario(self):
         self.id_producto_seleccionado = None
+        if self.tiene_codigo:
+            self.entrada_codigo.delete(0, tk.END)
         for entrada in (
             self.entrada_nombre,
             self.entrada_precio,

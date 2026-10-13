@@ -110,9 +110,10 @@ guardar, buscar, modificar y eliminar productos. Al seleccionar una fila,
 sus datos se cargan en el formulario para poder editarla.
 
 Las operaciones SQL están separadas de la interfaz en
-`logic/repositorio_productos.py` y usan las tablas existentes
-`producto` y `categoria` de la base `codemarket`. La configuración de conexión
-se lee desde `data/config_db.json`; para prepararla, copiá
+`logic/repositorio_productos.py` y usan las tablas `producto` y `categoria`
+definidas en el esquema actual. El repositorio también reconoce las tablas
+`productos` y `categorias` de instalaciones anteriores. La configuración de
+conexión se lee desde `data/config_db.json`; para prepararla, copiá
 `data/config_db.example.json` a ese nombre y completá los datos locales de MySQL.
 
 El CRUD utiliza las columnas definidas en `data/schema.sql`; ese esquema no
