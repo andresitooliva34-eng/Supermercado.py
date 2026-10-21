@@ -55,49 +55,37 @@ Se necesita Python 3.10 o superior. Tkinter ya viene incluido con Python en Wind
    python main.py
    ```
 
-La app necesita el paquete `mysql-connector-python` para abrir, aunque no se use la base de datos. El paso 2 lo instala.
+La aplicación requiere MySQL encendido y configurado para iniciar. El paso 2 instala el conector y las dependencias.
 
-##  Acceso inicial
-
-- **Usuario:** `admin`
-- **Contraseña:** `admin123`
-- **Rol:** Administrador
-
-Si `data/empleados.json` está vacío, la app crea este usuario sola. Después, los empleados se gestionan desde **Administración → ABM de Empleados**.
-
-## 🗄️ Base de datos MySQL (opcional)
-
-Solo hace falta para usar la ventana **Archivo → Productos (MySQL)**.
+## Base de datos MySQL
 
 1. Tener instalado MySQL Server (por ejemplo, junto con MySQL Workbench).
-2. Ejecutar `data/schema.sql` una sola vez como usuario `root`, desde Workbench o con:
+2. Para una instalación nueva, ejecutar `data/schema.sql` una sola vez como usuario `root`, desde Workbench o con:
 
    ```bash
    mysql -u root -p < data/schema.sql
    ```
 
-   El script crea la base `codemarket` con sus tablas y datos de prueba, y dos usuarios de prueba: `cm_admin` y `cm_cajero`.
+   **El script borra y vuelve a crear `codemarket`; no lo ejecutes sobre una base que quieras conservar.** Si ya tenés la estructura plural (`categorias`, `clientes`, `empleados`, `productos`, `ventas`, `detalle_venta`), ejecutá en cambio `data/migracion_mysql.sql` una sola vez. Esa actualización agrega la contraseña/estado del empleado y permite clientes sin DNI ni limitar los roles de la app.
 
-3. Copiar `data/config_db.example.json` con el nombre `data/config_db.json`. Ya trae los datos del usuario `cm_admin`. Ese archivo no se sube a GitHub porque está en `.gitignore`.
-4. Abrir la app y entrar a **Archivo → Productos (MySQL)**.
+   ```bash
+   mysql -u root -p < data/migracion_mysql.sql
+   ```
+3. Copiar `data/config_db.example.json` como `data/config_db.json` y reemplazar el marcador de contraseña por la credencial local de MySQL para ese usuario. No compartas ni subas `data/config_db.json`; el archivo local está ignorado por Git. La contraseña de ejemplo no es una credencial válida.
+4. Importar los datos JSON existentes sin borrar los archivos de respaldo:
 
-##  Dónde se guardan los datos
+   ```bash
+   python -m logic.migrar_json_mysql
+   ```
 
-| Datos | Dónde se guardan |
-|---|---|
-| Productos de la pantalla principal y del carrito | `data/productos.json` |
-| Categorías | `data/categorias.json` |
-| Clientes | `data/clientes.json` |
-| Empleados | `data/empleados.json` |
-| Ventas | `data/ventas.json` |
-| Productos de la ventana "Productos (MySQL)" | Base MySQL `codemarket` |
+   La migración es repetible y registra los IDs de origen para evitar reimportar registros. Si un producto coincide por nombre, precio y categoría, se reutiliza sin cambiar el stock; los demás se agregan con un código `LEG-<id>`. Las ventas históricas se importan con sus detalles y sin volver a descontar inventario. Las ventas JSON sin empleado asociado se asignan al empleado administrador importado; empleados JSON incompletos se informan y se omiten.
+5. Iniciar con `python main.py`. En una base nueva, usar `groldan / Admin123`; en una base migrada, usar un empleado importado que tenga contraseña.
 
-El diseño completo de la base (categorías, productos, clientes, empleados, ventas y detalle de venta) está en `data/schema.sql`. Por ahora la app usa MySQL solo en la ventana de productos; el resto de los módulos sigue guardando en JSON.
+Los productos, categorías, clientes, empleados, ventas y detalles de venta se leen y escriben en MySQL. Los archivos JSON permanecen como respaldo y no se sincronizan durante el uso normal.
 
 ##  Tecnologías utilizadas
 
 - Python y Tkinter (interfaz)
-- JSON (archivos de datos)
 - MySQL con `mysql-connector-python` (base de datos)
 - ReportLab (exportación a PDF)
 - OpenPyXL (exportación a Excel)
@@ -110,16 +98,14 @@ guardar, buscar, modificar y eliminar productos. Al seleccionar una fila,
 sus datos se cargan en el formulario para poder editarla.
 
 Las operaciones SQL están separadas de la interfaz en
-`logic/repositorio_productos.py` y usan las tablas `producto` y `categoria`
-definidas en el esquema actual. El repositorio también reconoce las tablas
-`productos` y `categorias` de instalaciones anteriores. La configuración de
-conexión se lee desde `data/config_db.json`; para prepararla, copiá
+`logic/repositorio_productos.py` y usan las tablas `productos` y `categorias`
+del esquema definido. El repositorio consulta el código real del producto.
+La configuración de conexión se lee desde
+`data/config_db.json`; para prepararla, copiá
 `data/config_db.example.json` a ese nombre y completá los datos locales de MySQL.
 
-El CRUD utiliza las columnas definidas en `data/schema.sql`; ese esquema no
-incluye un campo de código para los productos. El script elimina y recrea la
-base `codemarket`, por lo que no debe ejecutarse de nuevo si se quieren
-conservar los datos cargados.
+El CRUD utiliza explícitamente las columnas documentadas en `data/schema.sql`.
+No se detectan nombres de tablas alternativos ni se adivinan columnas.
 
 ##  Estructura del proyecto
 
@@ -137,14 +123,17 @@ Supermercado.py/
 │   ├── venta.py                 → clase Venta
 │   ├── pago.py                  → pagos: Efectivo, Tarjeta y Mercado Pago
 │   ├── cliente.py               → clase Cliente
-│   ├── supermercado.py          → catálogo de productos (productos.json)
-│   ├── repositorio.py           → lectura y escritura de los archivos JSON
-│   ├── repositorio_productos.py → consultas SQL de productos (MySQL)
+│   ├── supermercado.py          → modelo en memoria del catálogo
+│   ├── repositorio.py           → acceso legado a JSON (respaldo/migración)
+│   ├── repositorio_mysql.py     → clientes, empleados, categorías y ventas
+│   ├── migrar_json_mysql.py     → importación idempotente de datos existentes
+│   ├── repositorio_productos.py → consultas SQL del catálogo MySQL
 │   ├── validaciones.py          → validación de DNI y teléfono
 │   └── exportador_pdf.py        → factura del carrito en PDF (todavía no se usa en la venta)
 ├── data/                        → datos
-│   ├── *.json                   → productos, categorías, clientes, empleados y ventas
+│   ├── *.json                   → archivos históricos de origen/respaldo
 │   ├── schema.sql               → crea la base MySQL codemarket
+│   ├── migracion_mysql.sql      → actualiza una base existente sin borrarla
 │   ├── conexion.py              → conexión a MySQL
 │   └── config_db.example.json   → ejemplo de configuración de la base
 └── assets/                      → íconos, imagen y estilos

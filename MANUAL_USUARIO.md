@@ -19,7 +19,7 @@ CodeMarket es un programa de caja para un supermercado. Permite:
 
 ## 2. Abrir el programa
 
-1. Abrí el programa: desde la carpeta del proyecto, ejecutá `python main.py`. La primera vez hay que instalar lo que necesita, como explica el README.
+1. Encendé MySQL y abrí el programa ejecutando `python main.py`. La primera vez hay que instalar lo que necesita y configurar la base, como explica el README.
 2. Se abre la ventana principal y, enseguida, una ventana pidiendo usuario y contraseña.
 
 ---
@@ -29,7 +29,7 @@ CodeMarket es un programa de caja para un supermercado. Permite:
 1. Escribí tu **Usuario** y tu **Contraseña**.
 2. Hacé clic en **Ingresar** (o apretá Enter).
 
-La primera vez se puede entrar con el usuario **admin** y la contraseña **admin123**.
+En la base recién creada se puede entrar con el usuario **groldan** y la contraseña **Admin123**. Si se importaron los datos de los JSON, también se importan los empleados que ya existían allí.
 
 - Si te equivocás, aparece el mensaje "Usuario o contraseña inválidos". Volvé a intentar.
 - Arriba de la tabla de productos vas a ver tu nombre ("Cajero: ...") cuando hayas ingresado.
@@ -109,14 +109,17 @@ Para editar o eliminar, primero hacé clic sobre la fila.
 
 ---
 
-## 9. Consultar y cargar productos en la base de datos
+## 9. Productos, categorías y datos
 
-En el menú **Archivo** → **Productos (MySQL)** se abre una ventana con:
+La caja, los ABM y el historial usan la misma base MySQL. En **Administración** se pueden gestionar productos, categorías y empleados según el rol.
 
-- **Nuevo producto:** completá nombre, precio, stock y categoría, y hacé clic en **Guardar producto**.
+En **Archivo** → **Productos (MySQL)** se abre una ventana con:
+
+- **Nuevo producto:** completá código, nombre, precio, stock y categoría, y hacé clic en **Guardar**.
 - **Buscar por nombre o ID:** escribí y la lista se filtra al instante.
+- Para modificar, seleccioná un producto de la tabla, editá sus datos y hacé clic en **Modificar**.
 
-Para que funcione, el servidor de base de datos (MySQL) tiene que estar encendido.
+Para que funcione la aplicación, el servidor MySQL tiene que estar encendido y configurado.
 
 ---
 
@@ -139,8 +142,8 @@ Para que funcione, el servidor de base de datos (MySQL) tiene que estar encendid
 | No hay stock suficiente de (producto). Revisá el carrito. | El stock de ese producto bajó después de que lo agregaste al carrito (por ejemplo, se cambió desde ABM de Productos) | Revisá el carrito y ajustá las cantidades |
 | El DNI tiene que tener 7 u 8 números | El DNI tiene letras o la cantidad de números es incorrecta | Escribí solo números, sin puntos |
 | No hay compras registradas para exportar | Todavía no hay ventas | Registrá una venta primero |
-| No se pudo consultar / No se pudo guardar (ventana Productos MySQL) | El servidor de base de datos está apagado | Avisá a la persona que administra el sistema |
-| Falta data/config_db.json (ventana Productos MySQL) | La base de datos no está configurada en esta computadora | Seguí los pasos de la sección de MySQL del README |
+| No se pudo conectar a MySQL | El servidor de base de datos está apagado o mal configurado | Avisá a la persona que administra el sistema |
+| Falta `data/config_db.json` | La base de datos no está configurada en esta computadora | Seguí los pasos de MySQL del README |
 
 ---
 

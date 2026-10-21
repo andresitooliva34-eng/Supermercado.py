@@ -1,12 +1,13 @@
 class Producto:
     
-    def __init__(self, id, nombre, categoria, precio, stock):
+    def __init__(self, id, nombre, categoria, precio, stock, codigo=""):
         # Guarda los datos principales del producto
         self.id = int(id)
         self.nombre = nombre
         self.categoria = categoria
         self.precio = float(precio)
         self.stock = int(stock)
+        self.codigo = codigo
 
 
     # Mantiene compatibilidad con código que utiliza id_producto
@@ -40,7 +41,8 @@ class Producto:
             "nombre": self.nombre,
             "categoria": self.categoria,
             "precio": self.precio,
-            "stock": self.stock
+            "stock": self.stock,
+            "codigo": self.codigo
         }
 
 

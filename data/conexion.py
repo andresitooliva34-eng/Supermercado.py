@@ -44,7 +44,7 @@ def probar_conexion():
         conexion = obtener_conexion()
         cursor = conexion.cursor()
  
-        cursor.execute("SELECT COUNT(*) FROM producto")
+        cursor.execute("SELECT COUNT(*) FROM productos")
         cantidad = cursor.fetchone()[0]
  
         print(f"Conexión exitosa. Productos en la base: {cantidad}")
