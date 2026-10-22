@@ -13,7 +13,7 @@ CodeMarket es un programa de caja para un supermercado. Permite:
 - Armar una venta agregando productos a un carrito.
 - Cobrar con efectivo, tarjeta o Mercado Pago.
 - Consultar las ventas realizadas y exportarlas a PDF o Excel.
-- Administrar productos, categorías y empleados (según el cargo de cada persona).
+- Administrar productos, categorías, clientes y empleados (según el cargo de cada persona).
 
 ---
 
@@ -29,7 +29,7 @@ CodeMarket es un programa de caja para un supermercado. Permite:
 1. Escribí tu **Usuario** y tu **Contraseña**.
 2. Hacé clic en **Ingresar** (o apretá Enter).
 
-En la base recién creada se puede entrar con el usuario **groldan** y la contraseña **Admin123**. Si se importaron los datos de los JSON, también se importan los empleados que ya existían allí.
+En una instalación de prueba, usá el usuario **admin** y la contraseña **admin123**, que también aparecen en la ventana. Es una cuenta pública de demostración: no la uses para datos reales ni en un servidor expuesto. En una base existente, seguí el README para habilitarla sin borrar los datos, o creá una cuenta administrativa propia con `python -m logic.configurar_administrador`.
 
 - Si te equivocás, aparece el mensaje "Usuario o contraseña inválidos". Volvé a intentar.
 - Arriba de la tabla de productos vas a ver tu nombre ("Cajero: ...") cuando hayas ingresado.
@@ -99,6 +99,7 @@ El menú **Administración** muestra solo lo que tu cargo permite:
 |--------|-----------------------|
 | ABM de Productos (agregar, editar, eliminar, cambiar precio y stock) | Administrador, Gerente, Supervisor y Repositor |
 | ABM de Categorías | Administrador, Gerente y Supervisor |
+| ABM de Clientes | Administrador y Gerente |
 | ABM de Empleados | Administrador y Gerente |
 
 En cada pantalla hay tres botones: **Nuevo**, **Editar** y **Eliminar**.
@@ -111,7 +112,7 @@ Para editar o eliminar, primero hacé clic sobre la fila.
 
 ## 9. Productos, categorías y datos
 
-La caja, los ABM y el historial usan la misma base MySQL. En **Administración** se pueden gestionar productos, categorías y empleados según el rol.
+La caja, los ABM y el historial usan la misma base MySQL. En **Administración** se pueden gestionar productos, categorías, clientes y empleados según el rol. Al borrar un cliente, sus ventas se conservan y quedan sin cliente asociado.
 
 En **Archivo** → **Productos (MySQL)** se abre una ventana con:
 

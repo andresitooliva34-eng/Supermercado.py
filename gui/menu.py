@@ -566,6 +566,9 @@ class VentanaSupermercado:
         if rol in ("Administrador", "Gerente", "Supervisor"):
             self.menu_administracion.add_command(label="ABM de Categorias", command=self.gestionar_categorias)
         if rol in ("Administrador", "Gerente"):
+            self.menu_administracion.add_command(
+                label="ABM de Clientes", command=self.gestionar_clientes
+            )
             self.menu_administracion.add_command(label="ABM de Empleados", command=self.gestionar_empleados)
 
     def iniciar_sesion(self):
@@ -610,7 +613,12 @@ class VentanaSupermercado:
 
         tk.Label(
             dialogo,
-            text="Usuario demo: groldan   |   Contraseña demo: Admin123",
+            text=(
+                "Cuenta de prueba\n"
+                "Usuario: admin\n"
+                "Contraseña: admin123\n"
+                "No usar en producción."
+            ),
             fg="#2E7D32",
             font=("Arial", 9, "bold"),
             justify="center",
@@ -849,6 +857,180 @@ class VentanaSupermercado:
             tk.Button(botones, text=texto, command=comando).pack(side="left", padx=5)
         recargar()
 
+    def gestionar_clientes(self):
+        ventana = tk.Toplevel(self.ventana)
+        ventana.title("Administrar clientes")
+        ventana.geometry("760x420")
+        ventana.transient(self.ventana)
+
+        columnas = ("id", "nombre", "dni", "telefono", "ventas")
+        tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
+        for clave, titulo, ancho in (
+            ("id", "ID", 55),
+            ("nombre", "Nombre", 220),
+            ("dni", "DNI", 130),
+            ("telefono", "Teléfono", 150),
+            ("ventas", "Compras", 90)
+        ):
+            tabla.heading(clave, text=titulo)
+            tabla.column(clave, width=ancho)
+        tabla.pack(padx=12, pady=12, fill="both", expand=True)
+
+        clientes = []
+
+        def recargar():
+            try:
+                clientes[:] = self.repo_mysql.listar_clientes()
+            except Error as error:
+                messagebox.showerror(
+                    "Clientes", f"No se pudieron cargar:\n{error}",
+                    parent=ventana
+                )
+                return
+            tabla.delete(*tabla.get_children())
+            for cliente in clientes:
+                tabla.insert(
+                    "",
+                    "end",
+                    iid=str(cliente["id"]),
+                    values=(
+                        cliente["id"],
+                        f"{cliente['nombre']} {cliente['apellido']}".strip(),
+                        cliente["dni"],
+                        cliente["telefono"],
+                        cliente["cantidad_ventas"]
+                    )
+                )
+
+        def formulario(cliente=None):
+            dialogo = tk.Toplevel(ventana)
+            dialogo.title(
+                "Nuevo cliente" if cliente is None else "Editar cliente"
+            )
+            dialogo.transient(ventana)
+
+            valores = (
+                ("Nombre", ""),
+                ("Apellido", ""),
+                ("DNI (opcional)", ""),
+                ("Teléfono (opcional)", "")
+            ) if cliente is None else (
+                ("Nombre", cliente["nombre"]),
+                ("Apellido", cliente["apellido"]),
+                ("DNI (opcional)", cliente["dni"]),
+                ("Teléfono (opcional)", cliente["telefono"])
+            )
+            entradas = []
+            for fila, (etiqueta, valor) in enumerate(valores):
+                tk.Label(dialogo, text=f"{etiqueta}:").grid(
+                    row=fila, column=0, padx=10, pady=6, sticky="e"
+                )
+                entrada = tk.Entry(dialogo, width=30)
+                entrada.insert(0, valor)
+                entrada.grid(row=fila, column=1, padx=10, pady=6)
+                entradas.append(entrada)
+
+            def guardar():
+                nombre = entradas[0].get().strip()
+                apellido = entradas[1].get().strip()
+                dni = limpiar_dni(entradas[2].get())
+                telefono = entradas[3].get().strip()
+                if not nombre:
+                    messagebox.showwarning(
+                        "Clientes", "El nombre es obligatorio.",
+                        parent=dialogo
+                    )
+                    return
+                if not dni_valido(dni):
+                    messagebox.showwarning(
+                        "Clientes", "El DNI debe tener 7 u 8 números.",
+                        parent=dialogo
+                    )
+                    entradas[2].focus_set()
+                    return
+                if not telefono_valido(telefono):
+                    messagebox.showwarning(
+                        "Clientes", "El teléfono contiene caracteres no permitidos.",
+                        parent=dialogo
+                    )
+                    entradas[3].focus_set()
+                    return
+
+                registro = Cliente(
+                    cliente["id"] if cliente else 0,
+                    nombre,
+                    apellido,
+                    dni,
+                    telefono
+                )
+                try:
+                    self.repo_mysql.guardar_cliente(registro)
+                except (Error, ValueError) as error:
+                    messagebox.showerror(
+                        "Clientes", f"No se pudo guardar:\n{error}",
+                        parent=dialogo
+                    )
+                    return
+                recargar()
+                dialogo.destroy()
+
+            tk.Button(
+                dialogo, text="Guardar", command=guardar
+            ).grid(row=4, column=0, columnspan=2, pady=10)
+            dialogo.after(10, dialogo.grab_set)
+            dialogo.focus_set()
+
+        def editar():
+            seleccion = tabla.selection()
+            if not seleccion:
+                messagebox.showwarning(
+                    "Clientes", "Seleccioná un cliente para editar.",
+                    parent=ventana
+                )
+                return
+            cliente = next(
+                item for item in clientes
+                if str(item["id"]) == seleccion[0]
+            )
+            formulario(cliente)
+
+        def eliminar():
+            seleccion = tabla.selection()
+            if not seleccion:
+                messagebox.showwarning(
+                    "Clientes", "Seleccioná un cliente para eliminar.",
+                    parent=ventana
+                )
+                return
+            if not messagebox.askyesno(
+                "Eliminar cliente",
+                "¿Eliminar el cliente? Las ventas históricas se conservarán "
+                "sin cliente asociado.",
+                parent=ventana
+            ):
+                return
+            try:
+                self.repo_mysql.eliminar_cliente(int(seleccion[0]))
+            except Error as error:
+                messagebox.showerror(
+                    "Clientes", f"No se pudo eliminar:\n{error}",
+                    parent=ventana
+                )
+                return
+            recargar()
+
+        botones = tk.Frame(ventana)
+        botones.pack(pady=8)
+        for texto, comando in (
+            ("Nuevo", formulario),
+            ("Editar", editar),
+            ("Eliminar", eliminar)
+        ):
+            tk.Button(botones, text=texto, command=comando).pack(
+                side="left", padx=5
+            )
+        recargar()
+
     def gestionar_empleados(self):
         ventana = tk.Toplevel(self.ventana)
         ventana.title("Administrar empleados")
@@ -953,7 +1135,7 @@ class VentanaSupermercado:
                         self.actualizar_cliente()
                     recargar()
                     dialogo.destroy()
-                except (Error, IntegrityError) as error:
+                except (Error, IntegrityError, ValueError) as error:
                     messagebox.showerror(
                         "Empleados", f"No se pudo guardar el empleado:\n{error}",
                         parent=dialogo
@@ -1274,7 +1456,7 @@ class VentanaSupermercado:
 
             try:
                 self.guardar_cliente()
-            except (Error, IntegrityError) as error:
+            except (Error, IntegrityError, ValueError) as error:
                 messagebox.showerror(
                     "Cliente", f"No se pudieron guardar los datos:\n{error}",
                     parent=v

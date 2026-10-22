@@ -18,19 +18,19 @@ Cada empleado entra con su usuario y su contraseña, y ve solo las opciones de s
 -  Control de stock: si falta stock de algún producto, la venta no se confirma y no se descuenta nada.
 -  Datos del cliente, con validación de DNI y teléfono.
 -  Historial de ventas, exportable a PDF y a Excel.
--  ABM de productos,  de categorías y de empleados.
+-  ABM de productos, categorías, clientes y empleados.
 -  Ventana "Productos (MySQL)": alta y consulta de productos en la base de datos MySQL.
 
 ##  Roles y permisos
 
-| Rol | Caja y ventas | Productos | Categorías | Empleados |
-|---|:---:|:---:|:---:|:---:|
-| Administrador | ✅ | ✅ | ✅ | ✅ |
-| Gerente | ✅ | ✅ | ✅ | ✅ |
-| Supervisor | ✅ | ✅ | ✅ | — |
-| Repositor | ✅ | ✅ | — | — |
-| Cajero | ✅ | — | — | — |
-| Vendedor | ✅ | — | — | — |
+| Rol | Caja y ventas | Productos | Categorías | Clientes | Empleados |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Administrador | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gerente | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Supervisor | ✅ | ✅ | ✅ | — | — |
+| Repositor | ✅ | ✅ | — | — | — |
+| Cajero | ✅ | — | — | — | — |
+| Vendedor | ✅ | — | — | — | — |
 
 ##  Cómo ejecutarlo
 
@@ -55,7 +55,7 @@ Se necesita Python 3.10 o superior. Tkinter ya viene incluido con Python en Wind
    python main.py
    ```
 
-La aplicación requiere MySQL encendido y configurado para iniciar. El paso 2 instala el conector y las dependencias.
+La aplicación requiere MySQL Server 8.0.18 o superior encendido y configurado para iniciar. El paso 2 instala el conector y las dependencias.
 
 ## Base de datos MySQL
 
@@ -66,22 +66,29 @@ La aplicación requiere MySQL encendido y configurado para iniciar. El paso 2 in
    mysql -u root -p < data/schema.sql
    ```
 
-   **El script borra y vuelve a crear `codemarket`; no lo ejecutes sobre una base que quieras conservar.** Si ya tenés la estructura plural (`categorias`, `clientes`, `empleados`, `productos`, `ventas`, `detalle_venta`), ejecutá en cambio `data/migracion_mysql.sql` una sola vez. Esa actualización agrega la contraseña/estado del empleado y permite clientes sin DNI ni limitar los roles de la app.
+   **El script borra y vuelve a crear `codemarket` y reemplaza las cuentas MySQL `cm_admin` y `cm_cajero`; no lo ejecutes sobre datos o cuentas que quieras conservar.** MySQL generará contraseñas aleatorias para ambas cuentas; copiá la generada para `cm_admin` y guardala solo en la configuración local. La base nueva incluye una cuenta de prueba de la aplicación. Si ya tenés la estructura plural (`categorias`, `clientes`, `empleados`, `productos`, `ventas`, `detalle_venta`), ejecutá en cambio `data/migracion_mysql.sql`. Esa actualización conserva los datos, agrega las columnas que falten y puede volver a ejecutarse.
 
    ```bash
    mysql -u root -p < data/migracion_mysql.sql
    ```
-3. Copiar `data/config_db.example.json` como `data/config_db.json` y reemplazar el marcador de contraseña por la credencial local de MySQL para ese usuario. No compartas ni subas `data/config_db.json`; el archivo local está ignorado por Git. La contraseña de ejemplo no es una credencial válida.
+3. Copiar `data/config_db.example.json` como `data/config_db.json` y reemplazar `CONFIGURAR_LOCALMENTE` con la contraseña local de `cm_admin` que generó MySQL. No compartas ni subas `data/config_db.json`; el archivo local está ignorado por Git. También podés configurar la conexión con las variables `SUPERMERCADO_DB_HOST`, `SUPERMERCADO_DB_PORT`, `SUPERMERCADO_DB_USER`, `SUPERMERCADO_DB_PASSWORD` y `SUPERMERCADO_DB_NAME`.
 4. Importar los datos JSON existentes sin borrar los archivos de respaldo:
 
    ```bash
    python -m logic.migrar_json_mysql
    ```
 
-   La migración es repetible y registra los IDs de origen para evitar reimportar registros. Si un producto coincide por nombre, precio y categoría, se reutiliza sin cambiar el stock; los demás se agregan con un código `LEG-<id>`. Las ventas históricas se importan con sus detalles y sin volver a descontar inventario. Las ventas JSON sin empleado asociado se asignan al empleado administrador importado; empleados JSON incompletos se informan y se omiten.
-5. Iniciar con `python main.py`. En una base nueva, usar `groldan / Admin123`; en una base migrada, usar un empleado importado que tenga contraseña.
+   La migración valida todos los archivos de origen antes de empezar, registra los IDs y se puede volver a ejecutar sin duplicar registros ya mapeados. Si un producto coincide por nombre, precio y categoría, se reutiliza sin cambiar el stock; los demás se agregan con un código `LEG-<id>`. Las ventas históricas se importan con sus detalles y sin volver a descontar inventario. Las contraseñas JSON se guardan como hashes bcrypt en MySQL; un usuario existente no se sobrescribe. Empleados incompletos se informan y se omiten. Si ocurre un error SQL durante la importación, corregilo y volvé a ejecutar la migración para continuar.
+5. Para una base recién creada, iniciá sesión con las credenciales de prueba visibles en la ventana: **admin / admin123**. Si ya tenés una base CodeMarket existente y querés habilitar esa cuenta demo sin borrar tus datos, ejecutá una vez:
 
-Los productos, categorías, clientes, empleados, ventas y detalles de venta se leen y escriben en MySQL. Los archivos JSON permanecen como respaldo y no se sincronizan durante el uso normal.
+   ```bash
+   mysql -u root -p < data/demo_admin.sql
+   ```
+
+   **Es una cuenta pública de demostración, no una contraseña segura.** Cambiala o desactivala antes de usar datos reales o exponer el servidor. Para crear una cuenta administrativa propia en vez de usar la demo, podés ejecutar `python -m logic.configurar_administrador` (si aún no hay una cuenta activa de Administrador/Gerente).
+6. Iniciar con `python main.py`.
+
+Los productos, categorías, clientes, empleados, ventas y detalles de venta se leen y escriben en MySQL. Los JSON solo son fuentes para la migración; la aplicación no los sincroniza durante el uso normal. Conservá las copias de respaldo de forma privada y protegida, ya que pueden contener datos personales.
 
 ##  Tecnologías utilizadas
 
@@ -107,6 +114,14 @@ La configuración de conexión se lee desde
 El CRUD utiliza explícitamente las columnas documentadas en `data/schema.sql`.
 No se detectan nombres de tablas alternativos ni se adivinan columnas.
 
+## Pruebas
+
+Para ejecutar las pruebas unitarias de configuración, migración y validaciones:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ##  Estructura del proyecto
 
 ```text
@@ -124,15 +139,17 @@ Supermercado.py/
 │   ├── pago.py                  → pagos: Efectivo, Tarjeta y Mercado Pago
 │   ├── cliente.py               → clase Cliente
 │   ├── supermercado.py          → modelo en memoria del catálogo
-│   ├── repositorio.py           → acceso legado a JSON (respaldo/migración)
+│   ├── repositorio.py           → utilidades JSON legadas
 │   ├── repositorio_mysql.py     → clientes, empleados, categorías y ventas
-│   ├── migrar_json_mysql.py     → importación idempotente de datos existentes
+│   ├── migrar_json_mysql.py     → importación validada a MySQL
+│   ├── configurar_administrador.py → creación segura del primer administrador
 │   ├── repositorio_productos.py → consultas SQL del catálogo MySQL
 │   ├── validaciones.py          → validación de DNI y teléfono
 │   └── exportador_pdf.py        → factura del carrito en PDF (todavía no se usa en la venta)
 ├── data/                        → datos
 │   ├── *.json                   → archivos históricos de origen/respaldo
 │   ├── schema.sql               → crea la base MySQL codemarket
+│   ├── demo_admin.sql           → habilita la cuenta demo en una base existente
 │   ├── migracion_mysql.sql      → actualiza una base existente sin borrarla
 │   ├── conexion.py              → conexión a MySQL
 │   └── config_db.example.json   → ejemplo de configuración de la base

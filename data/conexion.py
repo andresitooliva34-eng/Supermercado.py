@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
  
 import mysql.connector
@@ -11,16 +12,59 @@ RUTA_CONFIG = Path(__file__).resolve().parent / "config_db.json"
  
  
 def cargar_configuracion():
-    """Lee host, usuario, contraseña y base desde config_db.json."""
-    if not RUTA_CONFIG.exists():
+    """Carga la configuración local y permite sobreescribirla por entorno."""
+    if RUTA_CONFIG.exists():
+        with open(RUTA_CONFIG, encoding="utf-8") as archivo:
+            configuracion = json.load(archivo)
+    else:
+        configuracion = {}
+    if not isinstance(configuracion, dict):
+        raise ValueError("La configuración de MySQL debe ser un objeto JSON.")
+
+    variables_entorno = {
+        "host": "SUPERMERCADO_DB_HOST",
+        "port": "SUPERMERCADO_DB_PORT",
+        "user": "SUPERMERCADO_DB_USER",
+        "password": "SUPERMERCADO_DB_PASSWORD",
+        "database": "SUPERMERCADO_DB_NAME"
+    }
+    for clave, variable in variables_entorno.items():
+        valor = os.getenv(variable)
+        if valor:
+            configuracion[clave] = valor
+
+    obligatorias = ("host", "user", "password", "database")
+    faltantes = [clave for clave in obligatorias if not configuracion.get(clave)]
+    if faltantes:
         raise FileNotFoundError(
-            "Falta data/config_db.json. "
-            "Copiá data/config_db.example.json con ese nombre "
-            "y completá tus datos."
+            "Falta configurar MySQL. Completá data/config_db.json "
+            "a partir de data/config_db.example.json o definí las variables "
+            "SUPERMERCADO_DB_HOST, SUPERMERCADO_DB_USER, "
+            "SUPERMERCADO_DB_PASSWORD y SUPERMERCADO_DB_NAME. "
+            f"Campos faltantes: {', '.join(faltantes)}."
         )
- 
-    with open(RUTA_CONFIG, encoding="utf-8") as archivo:
-        return json.load(archivo)
+    if configuracion["password"] == "CONFIGURAR_LOCALMENTE":
+        raise ValueError(
+            "Reemplazá CONFIGURAR_LOCALMENTE por la contraseña local "
+            "de MySQL en data/config_db.json."
+        )
+    for clave in ("host", "user", "password", "database"):
+        if not isinstance(configuracion[clave], str):
+            raise ValueError(f"El campo '{clave}' de MySQL debe ser texto.")
+    for clave in ("host", "user", "database"):
+        if not configuracion[clave].strip():
+            raise ValueError(f"El campo '{clave}' de MySQL no puede estar vacío.")
+
+    puerto = configuracion.get("port", 3306)
+    if isinstance(puerto, bool) or not isinstance(puerto, (int, str)):
+        raise ValueError("El puerto de MySQL debe ser un número entero.")
+    try:
+        configuracion["port"] = int(puerto)
+    except (TypeError, ValueError) as error:
+        raise ValueError("El puerto de MySQL debe ser un número entero.") from error
+    if not 1 <= configuracion["port"] <= 65535:
+        raise ValueError("El puerto de MySQL debe estar entre 1 y 65535.")
+    return configuracion
  
  
 def obtener_conexion():
@@ -29,6 +73,7 @@ def obtener_conexion():
  
     return mysql.connector.connect(
         host=config["host"],
+        port=config["port"],
         user=config["user"],
         password=config["password"],
         database=config["database"]

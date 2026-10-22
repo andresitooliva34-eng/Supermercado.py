@@ -1,6 +1,6 @@
 {
   "host": "localhost",
   "user": "cm_admin",
-  "password": "REEMPLAZAR_POR_LA_CONTRASENA_LOCAL",
+  "password": "CONFIGURAR_LOCALMENTE",
   "database": "codemarket"
 }

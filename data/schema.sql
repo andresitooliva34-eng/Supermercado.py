@@ -12,8 +12,12 @@
 -- ATENCIÓN: borra y vuelve a crear la base "codemarket" y los usuarios
 -- cm_admin / cm_cajero. No toca ninguna otra base.
 --
--- Contraseñas de los empleados de prueba (se guardan como hash bcrypt):
---   groldan / Admin123      ssaravia y flozano / Cajero123
+-- Cuenta de prueba visible en el login: admin / admin123.
+-- Cambiarla o desactivarla antes de usar el sistema con datos reales.
+-- Las otras cuentas incluidas para relacionar datos de prueba quedan inactivas.
+-- Para instalaciones existentes, ejecutar data/demo_admin.sql.
+-- Crear otras cuentas administrativas con:
+--   python -m logic.configurar_administrador
 -- =====================================================================
 
 DROP DATABASE IF EXISTS codemarket;
@@ -130,10 +134,16 @@ INSERT INTO clientes (nombre, apellido, dni, telefono) VALUES
     ('Facundo', 'Lozano', '33444555', NULL),
     ('Brenda', 'Espeche', '35666777', '3513333333');
 
-INSERT INTO empleados (nombre, apellido, usuario, rol, clave) VALUES
-    ('Gabriel', 'Roldán', 'groldan', 'administrador', '$2b$12$B5JN06CEkVSBet4h4kvfxOuRI/FPEKt4MtgWbyMVH234MhR4mtf/y'),
-    ('Samuel', 'Saravia', 'ssaravia', 'cajero', '$2b$12$aYZW8v47Yzc64vRjFNgvHeRo26.6Tfoz3Pxqp9alw9JMfize6c1bu'),
-    ('Facundo', 'Lozano', 'flozano', 'cajero', '$2b$12$tigejJjJCxtym3uUVbNHAuncCtrEQa9V5D6VXCrzybjboVeaQ5kWS');
+INSERT INTO empleados
+    (nombre, apellido, usuario, rol, clave, activo) VALUES
+    ('Administrador', 'Demo', 'admin', 'administrador',
+     '$2b$12$CekHAIBrmdsVtmkqMRwGp.eUlvw/e5J6BPZNCAmky1UVPo0iULqbu', 1),
+    ('Gabriel', 'Roldán', 'empleado_demo_1', 'administrador',
+     '$2b$12$B5JN06CEkVSBet4h4kvfxOuRI/FPEKt4MtgWbyMVH234MhR4mtf/y', 0),
+    ('Samuel', 'Saravia', 'empleado_demo_2', 'cajero',
+     '$2b$12$aYZW8v47Yzc64vRjFNgvHeRo26.6Tfoz3Pxqp9alw9JMfize6c1bu', 0),
+    ('Facundo', 'Lozano', 'empleado_demo_3', 'cajero',
+     '$2b$12$tigejJjJCxtym3uUVbNHAuncCtrEQa9V5D6VXCrzybjboVeaQ5kWS', 0);
 
 INSERT INTO productos (codigo, nombre, precio, stock, id_categoria) VALUES
     ('LECHE-1L', 'Leche entera 1L', 1200.00, 50, 3),
@@ -201,9 +211,10 @@ GRANT SELECT, INSERT ON codemarket.ventas          TO rol_cajero;
 GRANT SELECT, INSERT ON codemarket.detalle_venta   TO rol_cajero;
 GRANT UPDATE (stock) ON codemarket.productos       TO rol_cajero;
 
--- Usuarios de la aplicación (cambien estas contraseñas en su equipo)
-CREATE USER 'cm_admin'@'localhost'  IDENTIFIED BY 'Admin_2026!';
-CREATE USER 'cm_cajero'@'localhost' IDENTIFIED BY 'Cajero_2026!';
+-- MySQL genera contraseñas aleatorias; copiá la contraseña generada para
+-- cm_admin a la configuración local. No se distribuyen contraseñas fijas.
+CREATE USER 'cm_admin'@'localhost' IDENTIFIED BY RANDOM PASSWORD;
+CREATE USER 'cm_cajero'@'localhost' IDENTIFIED BY RANDOM PASSWORD;
 
 GRANT rol_administrador TO 'cm_admin'@'localhost';
 GRANT rol_cajero        TO 'cm_cajero'@'localhost';
