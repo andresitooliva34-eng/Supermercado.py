@@ -122,12 +122,34 @@ Para ejecutar las pruebas unitarias de configuración, migración y validaciones
 python -m unittest discover -s tests -v
 ```
 
+### Pruebas de la base de datos
+
+Con la base recién creada con `data/schema.sql`:
+
+| Script | Usuario | Qué comprueba |
+|---|---|---|
+| `data/verificar_datos.sql` | `root` | Cantidad de registros por tabla (4 categorías, 4 clientes, 3 empleados, 20 productos, 5 ventas y 12 detalles), la venta a consumidor final, la venta anulada, el producto sin stock y los permisos efectivos del cajero |
+| `data/pruebas.sql` | `root` | Restricciones (CHECK, UNIQUE, FOREIGN KEY), control de stock y anulación de ventas. Los errores que aparecen son los esperados |
+| `data/pruebas_permisos.sql` | `cm_cajero` | Lo que el cajero puede hacer y lo que MySQL le rechaza |
+
+```bash
+mysql -u root -p --default-character-set=utf8mb4 < data/verificar_datos.sql
+mysql -u root -p --force --default-character-set=utf8mb4 < data/pruebas.sql
+mysql -u cm_cajero -p --force --default-character-set=utf8mb4 < data/pruebas_permisos.sql
+```
+
+En PowerShell, en lugar de `< data/archivo.sql` se usa `-e "source data/archivo.sql"`. La contraseña de `cm_cajero` la muestra MySQL al ejecutar `schema.sql`; si no la guardaste, `root` le puede poner una local con `ALTER USER 'cm_cajero'@'localhost' IDENTIFIED BY 'tu_clave_local';`. Todas las pruebas terminan con `ROLLBACK`, así que la base queda igual.
+
 ##  Estructura del proyecto
 
 ```text
 Supermercado.py/
 ├── main.py                      → arranca la aplicación
 ├── requirements.txt             → paquetes que hay que instalar
+├── MANUAL_USUARIO.md            → manual de uso paso a paso
+├── BITACORA.md                  → registro semana a semana del trabajo
+├── CodeMarket-Evidencias-actualizado.docx → informe de evidencias
+├── tests/                       → pruebas unitarias
 ├── gui/                         → ventanas (Tkinter)
 │   ├── menu.py                  → ventana principal: login, caja, carrito, historial y ABM
 │   ├── ventana_productos.py     → ventana "Productos (MySQL)"
@@ -149,6 +171,9 @@ Supermercado.py/
 ├── data/                        → datos
 │   ├── *.json                   → archivos históricos de origen/respaldo
 │   ├── schema.sql               → crea la base MySQL codemarket
+│   ├── verificar_datos.sql      → cantidades de los datos de prueba y permisos del cajero
+│   ├── pruebas.sql              → pruebas de integridad y reglas de negocio
+│   ├── pruebas_permisos.sql     → pruebas de permisos con el usuario cm_cajero
 │   ├── demo_admin.sql           → habilita la cuenta demo en una base existente
 │   ├── migracion_mysql.sql      → actualiza una base existente sin borrarla
 │   ├── conexion.py              → conexión a MySQL
@@ -167,4 +192,4 @@ Supermercado.py/
 
 ##  Bitácora
 
-El registro semana a semana de lo que hicimos está en [bitacora.md].
+El registro semana a semana de lo que hicimos está en [BITACORA.md](BITACORA.md).
