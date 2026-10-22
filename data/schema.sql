@@ -12,6 +12,10 @@
 -- ATENCIÓN: borra y vuelve a crear la base "codemarket" y los usuarios
 -- cm_admin / cm_cajero. No toca ninguna otra base.
 --
+-- Datos de prueba (Tabla 6.3 del informe): 4 categorías, 4 clientes,
+-- 3 empleados, 20 productos, 5 ventas y 12 detalles de venta.
+-- Para comprobarlos: data/verificar_datos.sql.
+--
 -- Cuenta de prueba visible en el login: admin / admin123.
 -- Cambiarla o desactivarla antes de usar el sistema con datos reales.
 -- Las otras cuentas incluidas para relacionar datos de prueba quedan inactivas.
@@ -57,7 +61,9 @@ CREATE TABLE empleados (
     clave       VARCHAR(255)       NOT NULL COMMENT 'Hash bcrypt, nunca la contraseña en texto plano',
     activo      TINYINT(1)         NOT NULL DEFAULT 1,
     CONSTRAINT pk_empleado PRIMARY KEY (id_empleado),
-    CONSTRAINT uq_empleado_usuario UNIQUE (usuario)
+    CONSTRAINT uq_empleado_usuario UNIQUE (usuario),
+    CONSTRAINT chk_empleado_rol CHECK (rol IN ('administrador', 'gerente',
+        'supervisor', 'cajero', 'repositor', 'vendedor'))
 ) ENGINE = InnoDB;
 
 CREATE TABLE productos (
@@ -83,8 +89,14 @@ CREATE TABLE ventas (
     id_empleado        INT                NOT NULL,
     metodo_pago        VARCHAR(20)        NOT NULL,
     total              DECIMAL(10,2)      NOT NULL,
+    estado             VARCHAR(10)        NOT NULL DEFAULT 'Completada',
+    numero_comprobante VARCHAR(50)        NULL,
     CONSTRAINT pk_venta PRIMARY KEY (id_venta),
+    CONSTRAINT uq_venta_comprobante UNIQUE (numero_comprobante),
     CONSTRAINT chk_venta_total CHECK (total >= 0),
+    CONSTRAINT chk_venta_metodo_pago
+        CHECK (metodo_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Mercado Pago')),
+    CONSTRAINT chk_venta_estado CHECK (estado IN ('Completada', 'Anulada')),
     CONSTRAINT fk_venta_cliente
         FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente)
         ON DELETE SET NULL,
@@ -138,11 +150,9 @@ INSERT INTO empleados
     (nombre, apellido, usuario, rol, clave, activo) VALUES
     ('Administrador', 'Demo', 'admin', 'administrador',
      '$2b$12$CekHAIBrmdsVtmkqMRwGp.eUlvw/e5J6BPZNCAmky1UVPo0iULqbu', 1),
-    ('Gabriel', 'Roldán', 'empleado_demo_1', 'administrador',
-     '$2b$12$B5JN06CEkVSBet4h4kvfxOuRI/FPEKt4MtgWbyMVH234MhR4mtf/y', 0),
-    ('Samuel', 'Saravia', 'empleado_demo_2', 'cajero',
+    ('Samuel', 'Saravia', 'empleado_demo_1', 'cajero',
      '$2b$12$aYZW8v47Yzc64vRjFNgvHeRo26.6Tfoz3Pxqp9alw9JMfize6c1bu', 0),
-    ('Facundo', 'Lozano', 'empleado_demo_3', 'cajero',
+    ('Facundo', 'Lozano', 'empleado_demo_2', 'cajero',
      '$2b$12$tigejJjJCxtym3uUVbNHAuncCtrEQa9V5D6VXCrzybjboVeaQ5kWS', 0);
 
 INSERT INTO productos (codigo, nombre, precio, stock, id_categoria) VALUES
@@ -167,13 +177,15 @@ INSERT INTO productos (codigo, nombre, precio, stock, id_categoria) VALUES
     ('AGUA-15L', 'Agua mineral 1.5L', 1500.00, 70, 2),
     ('SODA-15L', 'Soda 1.5L', 1400.00, 0, 2);
 
--- id_cliente NULL en la venta 3: consumidor final (sin cliente registrado)
-INSERT INTO ventas (fecha, total, metodo_pago, id_cliente, id_empleado) VALUES
-    ('2026-08-16 12:02:00', 8450.00, 'Tarjeta', 1, 2),
-    ('2026-08-16 13:13:00', 6600.00, 'Tarjeta', 2, 2),
-    ('2026-08-17 23:35:00', 10900.00, 'Transferencia', NULL, 3),
-    ('2026-08-23 18:03:00', 3000.00, 'Efectivo', 3, 3),
-    ('2026-08-24 10:20:00', 8000.00, 'Efectivo', 4, 2);
+-- id_cliente NULL en la venta 3: consumidor final (sin cliente registrado).
+-- La venta 5 está anulada: se conserva como historial, nunca se borra.
+-- Las ventas las registran los cajeros de prueba (id_empleado 2 y 3).
+INSERT INTO ventas (fecha, total, metodo_pago, estado, numero_comprobante, id_cliente, id_empleado) VALUES
+    ('2026-08-16 12:02:00', 8450.00, 'Tarjeta', 'Completada', 'factura_2026-08-16_12-02-00.pdf', 1, 2),
+    ('2026-08-16 13:13:00', 6600.00, 'Tarjeta', 'Completada', 'factura_2026-08-16_13-13-00.pdf', 2, 2),
+    ('2026-08-17 23:35:00', 10900.00, 'Transferencia', 'Completada', 'factura_2026-08-17_23-35-00.pdf', NULL, 3),
+    ('2026-08-23 18:03:00', 3000.00, 'Efectivo', 'Completada', 'factura_2026-08-23_18-03-00.pdf', 3, 3),
+    ('2026-08-24 10:20:00', 8000.00, 'Efectivo', 'Anulada', 'factura_2026-08-24_10-20-00.pdf', 4, 2);
 
 INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario) VALUES
     (1, 15, 1, 5700.00),
@@ -206,7 +218,7 @@ GRANT ALL PRIVILEGES ON codemarket.* TO rol_administrador;
 -- precios, no anula ventas y no borra nada.
 GRANT SELECT ON codemarket.productos       TO rol_cajero;
 GRANT SELECT ON codemarket.categorias      TO rol_cajero;
-GRANT SELECT, INSERT, UPDATE ON codemarket.clientes TO rol_cajero;
+GRANT SELECT, INSERT ON codemarket.clientes       TO rol_cajero;
 GRANT SELECT, INSERT ON codemarket.ventas          TO rol_cajero;
 GRANT SELECT, INSERT ON codemarket.detalle_venta   TO rol_cajero;
 GRANT UPDATE (stock) ON codemarket.productos       TO rol_cajero;

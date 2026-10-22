@@ -39,3 +39,33 @@ DEALLOCATE PREPARE migracion_stmt;
 
 ALTER TABLE ventas
     MODIFY metodo_pago VARCHAR(20) NOT NULL;
+
+-- Estado de la venta y número de comprobante, como en el diccionario de datos.
+-- Las ventas que ya existen quedan con estado 'Completada'.
+SET @agregar_estado = IF(
+    EXISTS(
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = 'ventas'
+          AND column_name = 'estado'
+    ),
+    'SELECT ''La columna ventas.estado ya existe'' AS estado',
+    'ALTER TABLE ventas ADD COLUMN estado VARCHAR(10) NOT NULL DEFAULT ''Completada'' AFTER total, ADD CONSTRAINT chk_venta_estado CHECK (estado IN (''Completada'', ''Anulada''))'
+);
+PREPARE migracion_stmt FROM @agregar_estado;
+EXECUTE migracion_stmt;
+DEALLOCATE PREPARE migracion_stmt;
+
+SET @agregar_comprobante = IF(
+    EXISTS(
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = 'ventas'
+          AND column_name = 'numero_comprobante'
+    ),
+    'SELECT ''La columna ventas.numero_comprobante ya existe'' AS estado',
+    'ALTER TABLE ventas ADD COLUMN numero_comprobante VARCHAR(50) NULL AFTER estado, ADD CONSTRAINT uq_venta_comprobante UNIQUE (numero_comprobante)'
+);
+PREPARE migracion_stmt FROM @agregar_comprobante;
+EXECUTE migracion_stmt;
+DEALLOCATE PREPARE migracion_stmt;
