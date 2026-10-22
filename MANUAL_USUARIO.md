@@ -1,155 +1,205 @@
-# Manual de usuario — CodeMarket (Supermercado)
+MANUAL DE USUARIO — CODEMARKET
 
-Este manual explica cómo usar el programa para registrar ventas y consultar
-productos. No hace falta saber de computación: alcanza con seguir los pasos.
+Sistema de gestión para supermercado
 
----
+Tecnologías: Python, Tkinter y MySQL
 
-## 1. Para qué sirve
+Institución: ISPC — Tecnicatura Superior en Desarrollo de Software
 
-CodeMarket es un programa de caja para un supermercado. Permite:
+Proyecto ABP · Comisión A · 2026
 
-- Ver los productos, su precio y cuántas unidades quedan (stock).
-- Armar una venta agregando productos a un carrito.
-- Cobrar con efectivo, tarjeta o Mercado Pago.
-- Consultar las ventas realizadas y exportarlas a PDF o Excel.
-- Administrar productos, categorías, clientes y empleados (según el cargo de cada persona).
+Este manual explica cómo utilizar CodeMarket para consultar productos y registrar ventas. Seguí los pasos en orden. Los nombres exactos de algunos botones pueden variar según la versión instalada.
 
----
+1. ¿Para qué sirve?
 
-## 2. Abrir el programa
+CodeMarket es una aplicación de escritorio para la operación de caja y la administración del supermercado. Según el usuario y los permisos asignados, permite:
 
-1. Encendé MySQL y abrí el programa ejecutando `python main.py`. La primera vez hay que instalar lo que necesita y configurar la base, como explica el README.
-2. Se abre la ventana principal y, enseguida, una ventana pidiendo usuario y contraseña.
+Consultar productos, precios, categorías y existencias.
 
----
+Agregar productos a un carrito y registrar ventas.
 
-## 3. Iniciar sesión
+Seleccionar efectivo, tarjeta o Mercado Pago como medio de pago.
 
-1. Escribí tu **Usuario** y tu **Contraseña**.
-2. Hacé clic en **Ingresar** (o apretá Enter).
+Consultar el historial y exportarlo a PDF o Excel.
 
-En una instalación de prueba, usá el usuario **admin** y la contraseña **admin123**, que también aparecen en la ventana. Es una cuenta pública de demostración: no la uses para datos reales ni en un servidor expuesto. En una base existente, seguí el README para habilitarla sin borrar los datos, o creá una cuenta administrativa propia con `python -m logic.configurar_administrador`.
+Administrar productos, categorías y empleados, según el rol.
 
-- Si te equivocás, aparece el mensaje "Usuario o contraseña inválidos". Volvé a intentar.
-- Arriba de la tabla de productos vas a ver tu nombre ("Cajero: ...") cuando hayas ingresado.
-- Sin iniciar sesión se pueden mirar los productos, pero **no se puede finalizar una venta**.
+2. Abrir el programa
 
----
+Abrí la aplicación SuperMercado (ícono del carrito verde).
 
-## 4. La pantalla principal
+Esperá a que aparezca la ventana de inicio de sesión.
 
-De arriba hacia abajo:
+Si la aplicación no abre o muestra un error de conexión, avisá a la persona responsable de la instalación.
 
-- **Menú** (Archivo, Administración, Acerca de).
-- **Filtros de búsqueda:** para encontrar productos.
-- **Tabla de productos:** ID, nombre, categoría, precio, stock y estado.
-  Los productos sin stock aparecen en rojo con el cartel **SIN STOCK**.
-- **Botones de acción:** Cantidad, Agregar producto, Ver carrito, Finalizar venta, Historial y Datos del cliente.
-- **Barra inferior:** cuántos productos hay en el carrito y el total a cobrar.
+3. Iniciar sesión
 
----
+Escribí tu usuario y contraseña.
 
-## 5. Buscar productos
+Hacé clic en Ingresar o presioná Enter.
 
-- **Buscar por nombre:** escribí una parte del nombre (por ejemplo "leche"). La tabla se actualiza sola.
-- **Categoría:** elegí una categoría de la lista para ver solo esa.
-- **Solo con stock:** tildá la casilla para ocultar los productos agotados.
-- **Limpiar filtros:** vuelve a mostrar todos los productos.
+Para la demostración académica se documentó el usuario admin y la contraseña admin123. Estas credenciales solo deben utilizarse en el entorno de prueba; no son seguras para producción.
 
----
+Si aparece “Usuario o contraseña inválidos”, revisá los datos e intentá nuevamente.
 
-## 6. Registrar una venta, paso a paso
+Una vez iniciada la sesión, la pantalla puede mostrar el usuario o el rol activo. Para finalizar una venta es necesario iniciar sesión.
 
-1. **Elegí el producto:** hacé clic sobre su fila en la tabla.
-2. **Indicá la cantidad** en el casillero "Cantidad" (con las flechitas o escribiéndola).
-3. Hacé clic en **Agregar producto**. Aparece el aviso "Producto agregado al carrito".
-   Repetí los pasos 1 a 3 con cada producto de la venta.
-4. (Opcional) Hacé clic en **Ver carrito** para revisar la venta. Ahí podés:
-   - **Modificar** la cantidad: elegí el producto, escribí la nueva cantidad y hacé clic en Modificar.
-   - **Eliminar** el producto seleccionado.
-   - **Vaciar carrito** para empezar de nuevo.
-5. (Opcional) **Datos del cliente:** completá nombre, apellido, DNI (7 u 8 números) y teléfono.
-6. Hacé clic en **Finalizar venta**. Se muestra el total a pagar.
-7. Elegí el medio de pago: **Efectivo**, **Tarjeta** o **Mercado Pago**.
-8. Hacé clic en **Confirmar pago**. Aparece "Venta #... registrada".
-   El stock de los productos se descuenta solo y el carrito queda vacío.
+4. Pantalla principal
 
-**Importante:** el programa no deja vender más unidades de las que hay.
-Si pasa, aparece "No hay suficiente stock disponible": bajá la cantidad o elegí otro producto.
+La pantalla de caja puede incluir:
 
----
+Menú: opciones de archivo, administración y acerca de.
 
-## 7. Ver el historial de ventas
+Filtros: permiten buscar por nombre o categoría y limitar la lista a productos con stock.
 
-- Hacé clic en **Historial**. Se muestra la lista de ventas, de la más nueva a la más vieja,
-  con número de venta, cliente, total, fecha y medio de pago.
-- Para guardarlo en un archivo, usá el menú **Archivo**:
-  - **Exportar Historial a PDF**
-  - **Exportar Historial a Excel**
-  Elegí dónde guardar el archivo y hacé clic en Guardar.
+Tabla de productos: muestra datos como identificador, nombre, categoría, precio y stock.
 
----
+Acciones de venta: cantidad, agregar producto, ver carrito y finalizar venta.
 
-## 8. Administración (según tu cargo)
+Historial y datos del cliente: permiten consultar ventas o cargar datos del comprador.
 
-El menú **Administración** muestra solo lo que tu cargo permite:
+Resumen del carrito: indica la cantidad de artículos y el total estimado.
 
-| Opción | Quiénes pueden usarla |
-|--------|-----------------------|
-| ABM de Productos (agregar, editar, eliminar, cambiar precio y stock) | Administrador, Gerente, Supervisor y Repositor |
-| ABM de Categorías | Administrador, Gerente y Supervisor |
-| ABM de Clientes | Administrador y Gerente |
-| ABM de Empleados | Administrador y Gerente |
+La apariencia y los controles disponibles dependen de la versión de la aplicación y de los permisos del usuario.
 
-En cada pantalla hay tres botones: **Nuevo**, **Editar** y **Eliminar**.
-Para editar o eliminar, primero hacé clic sobre la fila.
+5. Buscar productos
 
-- No se puede eliminar una categoría que todavía tiene productos.
-- No podés eliminar tu propio usuario.
+Por nombre: escribí una parte del nombre del producto, por ejemplo leche.
 
----
+Por categoría: elegí una categoría en el filtro, si está disponible.
 
-## 9. Productos, categorías y datos
+Solo con stock: activá la casilla para ocultar productos agotados, si aparece en pantalla.
 
-La caja, los ABM y el historial usan la misma base MySQL. En **Administración** se pueden gestionar productos, categorías, clientes y empleados según el rol. Al borrar un cliente, sus ventas se conservan y quedan sin cliente asociado.
+Limpiar filtros: usá esta opción para volver a ver la lista completa.
 
-En **Archivo** → **Productos (MySQL)** se abre una ventana con:
+6. Registrar una venta
 
-- **Nuevo producto:** completá código, nombre, precio, stock y categoría, y hacé clic en **Guardar**.
-- **Buscar por nombre o ID:** escribí y la lista se filtra al instante.
-- Para modificar, seleccioná un producto de la tabla, editá sus datos y hacé clic en **Modificar**.
+Seleccioná un producto en la tabla.
 
-Para que funcione la aplicación, el servidor MySQL tiene que estar encendido y configurado.
+Indicá la cantidad en el campo Cantidad.
 
----
+Hacé clic en Agregar producto.
 
-## 10. Cerrar sesión y salir
+Repetí los pasos para cada artículo que quiera comprar el cliente.
 
-- **Administración → Cerrar sesión** deja la caja lista para otra persona.
-- Para salir, cerrá la ventana (la X) o usá **Archivo → Salir**. El programa pregunta
-  "¿Cerrar la aplicación?": elegí **Sí**.
+Entrá en Ver carrito para revisar los artículos. Si la pantalla lo permite, modificá cantidades, quitá artículos o vaciá el carrito.
 
----
+Si corresponde, completá los datos del cliente. El DNI debe ingresarse solo con números, sin puntos, y tener 7 u 8 dígitos si esa validación está habilitada.
 
-## 11. Mensajes frecuentes y qué hacer
+Hacé clic en Finalizar venta y revisá el total.
 
-| Mensaje | Qué significa | Qué hacer |
-|---------|---------------|-----------|
-| Seleccioná un producto de la tabla | No elegiste ningún producto | Hacé clic en una fila y volvé a intentar |
-| No hay suficiente stock disponible | Pediste más unidades de las que hay | Bajá la cantidad |
-| El carrito está vacío | Intentaste cobrar sin productos | Agregá al menos un producto |
-| Iniciá sesión para registrar una venta | No ingresaste con tu usuario | Iniciá sesión desde el menú Administración |
-| No hay stock suficiente de (producto). Revisá el carrito. | El stock de ese producto bajó después de que lo agregaste al carrito (por ejemplo, se cambió desde ABM de Productos) | Revisá el carrito y ajustá las cantidades |
-| El DNI tiene que tener 7 u 8 números | El DNI tiene letras o la cantidad de números es incorrecta | Escribí solo números, sin puntos |
-| No hay compras registradas para exportar | Todavía no hay ventas | Registrá una venta primero |
-| No se pudo conectar a MySQL | El servidor de base de datos está apagado o mal configurado | Avisá a la persona que administra el sistema |
-| Falta `data/config_db.json` | La base de datos no está configurada en esta computadora | Seguí los pasos de MySQL del README |
+Elegí Efectivo, Tarjeta o Mercado Pago, según las opciones que muestre la aplicación.
 
----
+Hacé clic en Confirmar pago y esperá el mensaje de confirmación.
 
-## 12. Consejos
+Si la operación se registra correctamente, la aplicación informa el número de venta. Verificá que el carrito quede vacío y que el stock se actualice.
 
-- Revisá el carrito antes de **Confirmar pago**: después de confirmar no se puede deshacer desde esta pantalla.
-- Cerrá la sesión al terminar el turno.
-- Si algo no funciona como se explica acá, anotá el mensaje que aparece y avisá al equipo de soporte.
+Control de stock: no intentes registrar una cantidad mayor a la disponible. Si el sistema informa que no hay stock suficiente o que el stock cambió, revisá el carrito y ajustá las cantidades antes de confirmar.
+
+7. Consultar y exportar el historial
+
+Hacé clic en Historial.
+
+Revisá los datos que muestra la lista, como número de venta, cliente, total, fecha y medio de pago, según la versión.
+
+Para exportar, abrí el menú Archivo y elegí Exportar Historial a PDF o Exportar Historial a Excel, si esas opciones están disponibles.
+
+Seleccioná la carpeta de destino y guardá el archivo.
+
+Si no hay ventas registradas, no habrá operaciones para exportar.
+
+8. Administración y permisos
+
+El menú Administración puede mostrar distintas opciones según el rol configurado. La matriz de permisos documentada para el proyecto es:
+
+Opción
+
+Roles habilitados según la documentación del proyecto
+
+ABM de productos
+
+Administrador, Gerente, Supervisor y Repositor
+
+ABM de categorías
+
+Administrador, Gerente y Supervisor
+
+ABM de empleados
+
+Administrador y Gerente
+
+ABM significa Alta, Baja y Modificación. Para editar o eliminar, seleccioná primero el registro correspondiente. Respetá los mensajes de validación del sistema; por ejemplo, una categoría que todavía tiene productos asociados puede no ser eliminable.
+
+Los permisos efectivos dependen de cómo esté configurada la versión instalada. Si una opción no aparece, consultá al administrador del sistema.
+
+9. Ventana de prueba de productos en MySQL
+
+En las versiones que incluyen la opción Archivo → Productos (MySQL), esta ventana permite probar la consulta y el alta de productos directamente en la base de datos:
+
+Comprobá que el servicio de MySQL esté iniciado y que la conexión esté configurada.
+
+Para crear un producto, completá los campos solicitados, incluida la categoría, y presioná Guardar producto.
+
+Para buscar, escribí el nombre o ID en el campo de búsqueda, si está disponible.
+
+Si aparece un error de conexión o de consulta, no repitas la operación muchas veces: avisá a la persona responsable de la base de datos.
+
+Importante: esta ventana debe tratarse como una función de administración/prueba si aparece separada de la caja principal. No cargues el mismo producto por dos caminos distintos sin confirmar cuál es la fuente de datos operativa definida para la versión instalada.
+
+10. Cerrar sesión y salir
+
+Si está disponible Administración → Cerrar sesión, usalo al terminar el turno.
+
+Para cerrar la aplicación, hacé clic en la X o elegí Archivo → Salir, si aparece esa opción.
+
+Si se muestra una confirmación, elegí Sí para salir.
+
+11. Mensajes frecuentes
+
+Mensaje o situación
+
+Qué hacer
+
+Seleccioná un producto de la tabla
+
+Seleccioná una fila antes de agregar un artículo.
+
+No hay suficiente stock disponible
+
+Reducí la cantidad o elegí otro producto.
+
+El carrito está vacío
+
+Agregá al menos un producto antes de finalizar la venta.
+
+Iniciá sesión para registrar una venta
+
+Iniciá sesión con una cuenta habilitada.
+
+El stock cambió. Revisá el carrito
+
+Revisá las cantidades y volvé a intentar.
+
+El DNI tiene que tener 7 u 8 números
+
+Ingresá solo números, sin puntos, si el campo requiere DNI.
+
+No hay compras registradas para exportar
+
+Registrá una venta antes de exportar el historial.
+
+No se pudo consultar o guardar en Productos (MySQL)
+
+Comprobá que MySQL esté iniciado y avisá al administrador si continúa el error.
+
+12. Buenas prácticas
+
+Revisá el carrito y el total antes de confirmar el pago.
+
+No cierres la aplicación durante el registro de una venta.
+
+Cerrá la sesión al terminar el turno.
+
+No compartas contraseñas personales ni uses la cuenta de demostración fuera de las pruebas.
+
+Si algo no funciona, anotá el mensaje exacto y comunicáselo al equipo de soporte.
