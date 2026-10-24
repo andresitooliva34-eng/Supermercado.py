@@ -1,6 +1,6 @@
 {
   "host": "localhost",
-  "user": "root",
-  "password": "123456",
+  "user": "cm_admin",
+  "password": "CONFIGURAR_LOCALMENTE",
   "database": "codemarket"
 }
