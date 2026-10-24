@@ -16,6 +16,7 @@ class VentanaProductos(tk.Toplevel):
         self.geometry("850x600")
         self.minsize(780, 520)
         self.configure(bg="#F1F8E9")
+        self.grab_set()
 
         self.repo = RepositorioProductosMySQL()
 
