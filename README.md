@@ -152,7 +152,9 @@ Supermercado.py/
 ├── CodeMarket-Evidencias-actualizado.docx → informe de evidencias
 ├── tests/                       → pruebas unitarias
 ├── gui/                         → ventanas (Tkinter)
-│   ├── menu.py                  → ventana principal: login, caja, carrito, historial y ABM
+│   ├── menu.py                  → ventana principal y composición visual del punto de venta
+│   ├── menu_administracion.py   → interfaces de login y administración por entidad
+│   ├── menu_caja.py             → interfaces del catálogo, cliente, carrito y ventas
 │   ├── ventana_productos.py     → ventana "Productos (MySQL)"
 │   └── exportador_historial.py  → exporta el historial a PDF y a Excel
 ├── logic/                       → reglas del negocio
