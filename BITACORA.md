@@ -20,7 +20,7 @@
 | Validaciones | Saravia, Samuel Eric |
 | Documentación y pruebas | Marín Silva, Rafael Alejandro |
 
-Roldán, Gabriel y Espeche, Brenda Aylen figuraban en el grupo al inicio. Desde el 12/10 ya no están en la lista de integrantes de la aplicación (commit `ca2cf66`).
+
 
 ---
 
