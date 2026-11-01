@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from mysql.connector import Error, IntegrityError
 
+from logic.cliente import Cliente
 from logic.pago import crear_pago
 from logic.producto import Producto
 from logic.venta import Venta
