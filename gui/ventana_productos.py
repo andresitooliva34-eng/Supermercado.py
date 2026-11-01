@@ -3,6 +3,7 @@ from tkinter import messagebox, ttk
 
 from mysql.connector import Error
 
+from logic.repositorio_categorias import RepositorioCategoriasMySQL
 from logic.repositorio_productos import RepositorioProductosMySQL
 
 
@@ -19,6 +20,7 @@ class VentanaProductos(tk.Toplevel):
         self.grab_set()
 
         self.repo = RepositorioProductosMySQL()
+        self.repo_categorias = RepositorioCategoriasMySQL()
 
         self.categorias = {}
         self.id_producto_seleccionado = None
@@ -145,7 +147,7 @@ class VentanaProductos(tk.Toplevel):
 
     def _cargar_categorias(self):
         try:
-            filas = self.repo.listar_categorias()
+            filas = self.repo_categorias.listar_categorias()
         except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos",
@@ -223,7 +225,7 @@ class VentanaProductos(tk.Toplevel):
         except ValueError as error:
             messagebox.showwarning("Atención", str(error), parent=self)
             return
-        except Error as error:
+        except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos", f"No se pudo guardar:\n{error}", parent=self
             )
@@ -273,7 +275,7 @@ class VentanaProductos(tk.Toplevel):
         except ValueError as error:
             messagebox.showwarning("Atención", str(error), parent=self)
             return
-        except Error as error:
+        except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos", f"No se pudo modificar:\n{error}", parent=self
             )
@@ -304,7 +306,7 @@ class VentanaProductos(tk.Toplevel):
         except ValueError as error:
             messagebox.showwarning("No se puede eliminar", str(error), parent=self)
             return
-        except Error as error:
+        except (Error, FileNotFoundError) as error:
             messagebox.showerror(
                 "Base de datos", f"No se pudo eliminar:\n{error}", parent=self
             )

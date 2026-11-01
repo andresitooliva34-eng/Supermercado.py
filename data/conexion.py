@@ -11,7 +11,7 @@ from mysql.connector import Error
 RUTA_CONFIG = Path(__file__).resolve().parent / "config_db.json"
  
  
-def cargar_configuracion():
+def cargar_configuracion(administrativa=False):
     """Carga la configuración local y permite sobreescribirla por entorno."""
     if RUTA_CONFIG.exists():
         with open(RUTA_CONFIG, encoding="utf-8") as archivo:
@@ -26,7 +26,9 @@ def cargar_configuracion():
         "port": "SUPERMERCADO_DB_PORT",
         "user": "SUPERMERCADO_DB_USER",
         "password": "SUPERMERCADO_DB_PASSWORD",
-        "database": "SUPERMERCADO_DB_NAME"
+        "database": "SUPERMERCADO_DB_NAME",
+        "admin_user": "SUPERMERCADO_DB_ADMIN_USER",
+        "admin_password": "SUPERMERCADO_DB_ADMIN_PASSWORD"
     }
     for clave, variable in variables_entorno.items():
         valor = os.getenv(variable)
@@ -45,11 +47,14 @@ def cargar_configuracion():
         )
     if configuracion["password"] == "CONFIGURAR_LOCALMENTE":
         raise ValueError(
-            "Reemplazá CONFIGURAR_LOCALMENTE por la contraseña local "
-            "de MySQL en data/config_db.json."
+            "Reemplazá CONFIGURAR_LOCALMENTE por la contraseña de cm_cajero "
+            "en data/config_db.json."
         )
     for clave in ("host", "user", "password", "database"):
         if not isinstance(configuracion[clave], str):
+            raise ValueError(f"El campo '{clave}' de MySQL debe ser texto.")
+    for clave in ("admin_user", "admin_password"):
+        if clave in configuracion and not isinstance(configuracion[clave], str):
             raise ValueError(f"El campo '{clave}' de MySQL debe ser texto.")
     for clave in ("host", "user", "database"):
         if not configuracion[clave].strip():
@@ -64,12 +69,39 @@ def cargar_configuracion():
         raise ValueError("El puerto de MySQL debe ser un número entero.") from error
     if not 1 <= configuracion["port"] <= 65535:
         raise ValueError("El puerto de MySQL debe estar entre 1 y 65535.")
+
+    if configuracion["user"] != "cm_cajero":
+        raise ValueError(
+            "La conexión operativa debe usar cm_cajero. Configurá también "
+            "admin_user y admin_password para las funciones administrativas."
+        )
+
+    if administrativa:
+        faltantes_admin = [
+            clave for clave in ("admin_user", "admin_password")
+            if not configuracion.get(clave)
+        ]
+        if faltantes_admin:
+            raise FileNotFoundError(
+                "Faltan las credenciales de administración en "
+                "data/config_db.json: "
+                f"{', '.join(faltantes_admin)}."
+            )
+        if configuracion["admin_user"] != "cm_admin":
+            raise ValueError("La conexión administrativa debe usar cm_admin.")
+        if configuracion["admin_password"] == "CONFIGURAR_LOCALMENTE":
+            raise ValueError(
+                "Reemplazá CONFIGURAR_LOCALMENTE por la contraseña de "
+                "cm_admin en data/config_db.json."
+            )
+        configuracion["user"] = configuracion["admin_user"]
+        configuracion["password"] = configuracion["admin_password"]
     return configuracion
- 
- 
-def obtener_conexion():
+
+
+def obtener_conexion(administrativa=False):
     """Crea y devuelve una conexión nueva a la base codemarket."""
-    config = cargar_configuracion()
+    config = cargar_configuracion(administrativa=administrativa)
  
     return mysql.connector.connect(
         host=config["host"],
@@ -94,7 +126,7 @@ def probar_conexion():
  
         print(f"Conexión exitosa. Productos en la base: {cantidad}")
  
-    except (Error, FileNotFoundError) as error:
+    except (Error, FileNotFoundError, ValueError) as error:
         print("No se pudo conectar:", error)
  
     finally:

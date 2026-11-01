@@ -66,12 +66,12 @@ La aplicación requiere MySQL Server 8.0.18 o superior encendido y configurado p
    mysql -u root -p < data/schema.sql
    ```
 
-   **El script borra y vuelve a crear `codemarket` y reemplaza las cuentas MySQL `cm_admin` y `cm_cajero`; no lo ejecutes sobre datos o cuentas que quieras conservar.** MySQL generará contraseñas aleatorias para ambas cuentas; copiá la generada para `cm_admin` y guardala solo en la configuración local. La base nueva incluye una cuenta de prueba de la aplicación. Si ya tenés la estructura plural (`categorias`, `clientes`, `empleados`, `productos`, `ventas`, `detalle_venta`), ejecutá en cambio `data/migracion_mysql.sql`. Esa actualización conserva los datos, agrega las columnas que falten y puede volver a ejecutarse.
+   **El script borra y vuelve a crear `codemarket` y reemplaza las cuentas MySQL `cm_admin` y `cm_cajero`; no lo ejecutes sobre datos o cuentas que quieras conservar.** MySQL generará contraseñas aleatorias para ambas cuentas; guardá la de `cm_cajero` para la caja y la de `cm_admin` para las funciones administrativas, solo en la configuración local. La base nueva incluye una cuenta de prueba de la aplicación. Si ya tenés la estructura plural (`categorias`, `clientes`, `empleados`, `productos`, `ventas`, `detalle_venta`), ejecutá en cambio `data/migracion_mysql.sql`. Esa actualización conserva los datos, agrega las columnas que falten y las cuentas/roles de la aplicación si no existen; no cambia las contraseñas de cuentas existentes.
 
    ```bash
    mysql -u root -p < data/migracion_mysql.sql
    ```
-3. Copiar `data/config_db.example.json` como `data/config_db.json` y reemplazar `CONFIGURAR_LOCALMENTE` con la contraseña local de `cm_admin` que generó MySQL. No compartas ni subas `data/config_db.json`; el archivo local está ignorado por Git. También podés configurar la conexión con las variables `SUPERMERCADO_DB_HOST`, `SUPERMERCADO_DB_PORT`, `SUPERMERCADO_DB_USER`, `SUPERMERCADO_DB_PASSWORD` y `SUPERMERCADO_DB_NAME`.
+3. Copiar `data/config_db.example.json` como `data/config_db.json` y completar `password` con la contraseña generada para `cm_cajero`, y `admin_password` con la de `cm_admin`. La caja se conecta con el usuario limitado `cm_cajero`; las operaciones administrativas usan `cm_admin`. No compartas ni subas `data/config_db.json`; el archivo local está ignorado por Git. También se puede configurar por entorno: `SUPERMERCADO_DB_HOST`, `SUPERMERCADO_DB_PORT`, `SUPERMERCADO_DB_USER`, `SUPERMERCADO_DB_PASSWORD`, `SUPERMERCADO_DB_NAME`, `SUPERMERCADO_DB_ADMIN_USER` y `SUPERMERCADO_DB_ADMIN_PASSWORD`.
 4. Importar los datos JSON existentes sin borrar los archivos de respaldo:
 
    ```bash
@@ -88,7 +88,7 @@ La aplicación requiere MySQL Server 8.0.18 o superior encendido y configurado p
    **Es una cuenta pública de demostración, no una contraseña segura.** Cambiala o desactivala antes de usar datos reales o exponer el servidor. Para crear una cuenta administrativa propia en vez de usar la demo, podés ejecutar `python -m logic.configurar_administrador` (si aún no hay una cuenta activa de Administrador/Gerente).
 6. Iniciar con `python main.py`.
 
-Los productos, categorías, clientes, empleados, ventas y detalles de venta se leen y escriben en MySQL. Los JSON solo son fuentes para la migración; la aplicación no los sincroniza durante el uso normal. Conservá las copias de respaldo de forma privada y protegida, ya que pueden contener datos personales.
+Los productos, categorías, clientes, empleados, ventas y detalles de venta se leen y escriben en MySQL; la caja y la ventana de administración consultan el mismo catálogo. Los JSON de entidades solo se leen durante la migración inicial y no se usan ni sincronizan durante el funcionamiento normal. Se conservan como archivos de origen/respaldo para que la migración pueda repetirse; protegé esas copias porque pueden contener datos personales.
 
 ##  Tecnologías utilizadas
 
@@ -104,9 +104,10 @@ Desde **Archivo → Productos (MySQL)** se abre una ventana que permite
 guardar, buscar, modificar y eliminar productos. Al seleccionar una fila,
 sus datos se cargan en el formulario para poder editarla.
 
-Las operaciones SQL están separadas de la interfaz en
-`logic/repositorio_productos.py` y usan las tablas `productos` y `categorias`
-del esquema definido. El repositorio consulta el código real del producto.
+Las operaciones SQL están separadas de la interfaz en repositorios por entidad:
+`logic/repositorio_productos.py` usa directamente las tablas `productos` y
+`categorias`, con sus columnas definidas en el esquema; categorías, clientes,
+empleados y ventas tienen sus propios repositorios.
 La configuración de conexión se lee desde
 `data/config_db.json`; para prepararla, copiá
 `data/config_db.example.json` a ese nombre y completá los datos locales de MySQL.
@@ -161,11 +162,15 @@ Supermercado.py/
 │   ├── pago.py                  → pagos: Efectivo, Tarjeta y Mercado Pago
 │   ├── cliente.py               → clase Cliente
 │   ├── supermercado.py          → modelo en memoria del catálogo
-│   ├── repositorio.py           → utilidades JSON legadas
-│   ├── repositorio_mysql.py     → clientes, empleados, categorías y ventas
+│   ├── repositorio_base_mysql.py → operaciones comunes de conexión
+│   ├── repositorio_productos.py → acceso a productos MySQL
+│   ├── repositorio_categorias.py → acceso a categorías MySQL
+│   ├── repositorio_clientes.py  → acceso a clientes MySQL
+│   ├── repositorio_empleados.py → acceso y autenticación de empleados
+│   ├── repositorio_ventas.py    → registro e historial de ventas
+│   ├── repositorio_mysql.py     → fachada de compatibilidad para código legado
 │   ├── migrar_json_mysql.py     → importación validada a MySQL
 │   ├── configurar_administrador.py → creación segura del primer administrador
-│   ├── repositorio_productos.py → consultas SQL del catálogo MySQL
 │   ├── validaciones.py          → validación de DNI y teléfono
 │   └── exportador_pdf.py        → factura del carrito en PDF (todavía no se usa en la venta)
 ├── data/                        → datos

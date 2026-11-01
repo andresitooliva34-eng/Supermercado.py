@@ -69,3 +69,26 @@ SET @agregar_comprobante = IF(
 PREPARE migracion_stmt FROM @agregar_comprobante;
 EXECUTE migracion_stmt;
 DEALLOCATE PREPARE migracion_stmt;
+
+-- Roles y cuentas de la aplicación. Las cuentas existentes no cambian su
+-- contraseña; si faltan, MySQL genera una nueva que debe guardarse localmente.
+CREATE ROLE IF NOT EXISTS rol_administrador, rol_cajero;
+
+GRANT ALL PRIVILEGES ON codemarket.* TO rol_administrador;
+GRANT SELECT ON codemarket.productos TO rol_cajero;
+GRANT SELECT ON codemarket.categorias TO rol_cajero;
+GRANT SELECT ON codemarket.empleados TO rol_cajero;
+GRANT SELECT, INSERT, UPDATE ON codemarket.clientes TO rol_cajero;
+GRANT SELECT, INSERT ON codemarket.ventas TO rol_cajero;
+GRANT SELECT, INSERT ON codemarket.detalle_venta TO rol_cajero;
+GRANT UPDATE (stock) ON codemarket.productos TO rol_cajero;
+
+CREATE USER IF NOT EXISTS 'cm_admin'@'localhost'
+    IDENTIFIED BY RANDOM PASSWORD;
+CREATE USER IF NOT EXISTS 'cm_cajero'@'localhost'
+    IDENTIFIED BY RANDOM PASSWORD;
+
+GRANT rol_administrador TO 'cm_admin'@'localhost';
+GRANT rol_cajero TO 'cm_cajero'@'localhost';
+SET DEFAULT ROLE rol_administrador TO 'cm_admin'@'localhost';
+SET DEFAULT ROLE rol_cajero TO 'cm_cajero'@'localhost';

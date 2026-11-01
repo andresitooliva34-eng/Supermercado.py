@@ -306,7 +306,7 @@ def _ejecutar(sql, parametros=(), fetch=False):
     conexion = None
     cursor = None
     try:
-        conexion = obtener_conexion()
+        conexion = obtener_conexion(administrativa=True)
         cursor = conexion.cursor()
         cursor.execute(sql, parametros)
         resultado = cursor.fetchall() if fetch else cursor.lastrowid
@@ -357,7 +357,7 @@ def _insertar_mapeado(tipo, id_origen, sql, parametros):
     conexion = None
     cursor = None
     try:
-        conexion = obtener_conexion()
+        conexion = obtener_conexion(administrativa=True)
         cursor = conexion.cursor()
         cursor.execute(sql, parametros)
         id_destino = cursor.lastrowid
@@ -560,9 +560,9 @@ def _migrar_ventas(datos):
             raise ValueError(
                 f"No se pudieron asociar los productos de la venta {item['id']}."
             )
-        from logic.repositorio_mysql import RepositorioMySQL
+        from logic.repositorio_ventas import RepositorioVentasMySQL
 
-        RepositorioMySQL().importar_venta_legacy(
+        RepositorioVentasMySQL().importar_venta_legacy(
             item, id_cliente, id_empleado, ids_productos, item["id"]
         )
 

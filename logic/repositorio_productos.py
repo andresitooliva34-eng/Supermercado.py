@@ -1,57 +1,26 @@
 import math
 
-from mysql.connector import Error, IntegrityError
+from mysql.connector import IntegrityError
 
-from data.conexion import obtener_conexion
+from logic.repositorio_base_mysql import RepositorioMySQLBase
 
 
-class RepositorioProductosMySQL:
+class RepositorioProductosMySQL(RepositorioMySQLBase):
     """CRUD del catálogo de la base codemarket existente."""
 
-    @staticmethod
-    def _conectar():
-        return obtener_conexion()
-
-    def listar_categorias(self):
-        conexion = None
-        cursor = None
-        try:
-            conexion = self._conectar()
-            cursor = conexion.cursor()
-            cursor.execute(
-                "SELECT id_categoria, nombre FROM categorias ORDER BY nombre"
-            )
-            return cursor.fetchall()
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion and conexion.is_connected():
-                conexion.close()
-
     def listar_productos(self, texto=""):
-        conexion = None
-        cursor = None
         patron = f"%{texto}%"
-        try:
-            conexion = self._conectar()
-            cursor = conexion.cursor()
-            cursor.execute(
-                """SELECT p.id_producto, p.codigo, p.nombre, c.nombre,
-                          p.precio, p.stock
-                   FROM productos p
-                   JOIN categorias c ON c.id_categoria = p.id_categoria
-                   WHERE p.nombre LIKE %s OR c.nombre LIKE %s
-                      OR p.codigo LIKE %s
-                      OR CAST(p.id_producto AS CHAR) = %s
-                   ORDER BY p.nombre""",
-                (patron, patron, patron, texto)
-            )
-            return cursor.fetchall()
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion and conexion.is_connected():
-                conexion.close()
+        return self._consultar(
+            """SELECT p.id_producto, p.codigo, p.nombre, c.nombre,
+                      p.precio, p.stock
+               FROM productos p
+               JOIN categorias c ON c.id_categoria = p.id_categoria
+               WHERE p.nombre LIKE %s OR c.nombre LIKE %s
+                  OR p.codigo LIKE %s
+                  OR CAST(p.id_producto AS CHAR) = %s
+               ORDER BY p.nombre""",
+            (patron, patron, patron, texto)
+        )
 
     @staticmethod
     def _validar_datos(nombre, precio, stock, id_categoria):
@@ -78,48 +47,35 @@ class RepositorioProductosMySQL:
     def agregar_producto(self, codigo, nombre, precio, stock, id_categoria):
         self._validar_datos(nombre, precio, stock, id_categoria)
         self._validar_codigo(codigo)
-        conexion = None
-        cursor = None
-        try:
-            conexion = self._conectar()
-            cursor = conexion.cursor()
-            cursor.execute(
-                """INSERT INTO productos
-                   (codigo, nombre, precio, stock, id_categoria)
-                   VALUES (%s, %s, %s, %s, %s)""",
-                (codigo.strip(), nombre.strip(), precio, stock, id_categoria)
-            )
-            conexion.commit()
-            return cursor.lastrowid
-        except Error:
-            if conexion and conexion.is_connected():
-                conexion.rollback()
-            raise
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion and conexion.is_connected():
-                conexion.close()
+        return self._ejecutar(
+            """INSERT INTO productos
+               (codigo, nombre, precio, stock, id_categoria)
+               VALUES (%s, %s, %s, %s, %s)""",
+            (codigo.strip(), nombre.strip(), precio, stock, id_categoria),
+            administrativa=True
+        )
 
     def actualizar_producto(
         self, id_producto, codigo, nombre, precio, stock, id_categoria
     ):
         self._validar_datos(nombre, precio, stock, id_categoria)
         self._validar_codigo(codigo)
-        self._cambiar(
+        self._ejecutar(
             """UPDATE productos
                SET codigo = %s, nombre = %s, precio = %s, stock = %s,
                    id_categoria = %s
                WHERE id_producto = %s""",
             (codigo.strip(), nombre.strip(), precio, stock, id_categoria,
-             id_producto)
+             id_producto),
+            administrativa=True
         )
 
     def eliminar_producto(self, id_producto):
         try:
-            self._cambiar(
+            self._ejecutar(
                 "DELETE FROM productos WHERE id_producto = %s",
-                (id_producto,)
+                (id_producto,),
+                administrativa=True
             )
         except IntegrityError as error:
             if error.errno == 1451:
@@ -128,21 +84,3 @@ class RepositorioProductosMySQL:
                     "a una venta."
                 ) from error
             raise
-
-    def _cambiar(self, sql, parametros):
-        conexion = None
-        cursor = None
-        try:
-            conexion = self._conectar()
-            cursor = conexion.cursor()
-            cursor.execute(sql, parametros)
-            conexion.commit()
-        except Error:
-            if conexion and conexion.is_connected():
-                conexion.rollback()
-            raise
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion and conexion.is_connected():
-                conexion.close()

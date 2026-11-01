@@ -6,7 +6,8 @@ from mysql.connector import IntegrityError
 
 from logic.cliente import Cliente
 from logic.migrar_json_mysql import _hash_clave, _validar_fuentes
-from logic.repositorio_mysql import RepositorioMySQL
+from logic.repositorio_clientes import RepositorioClientesMySQL
+from logic.repositorio_empleados import RepositorioEmpleadosMySQL
 
 
 def fuentes_validas():
@@ -97,10 +98,10 @@ class MigracionJsonTests(unittest.TestCase):
         duplicado = IntegrityError(msg="Duplicate entry", errno=1062)
 
         with patch.object(
-            RepositorioMySQL, "_ejecutar", side_effect=duplicado
+            RepositorioClientesMySQL, "_ejecutar", side_effect=duplicado
         ):
             with self.assertRaisesRegex(ValueError, "ese DNI"):
-                RepositorioMySQL().guardar_cliente(cliente)
+                RepositorioClientesMySQL().guardar_cliente(cliente)
 
     def test_empleado_no_acepta_contrasena_corta(self):
         empleado = {
@@ -110,7 +111,7 @@ class MigracionJsonTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(ValueError, "12 caracteres"):
-            RepositorioMySQL().guardar_empleado(empleado, "corta")
+            RepositorioEmpleadosMySQL().guardar_empleado(empleado, "corta")
 
     def test_empleado_nuevo_requiere_contrasena(self):
         empleado = {
@@ -120,4 +121,4 @@ class MigracionJsonTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(ValueError, "es obligatoria"):
-            RepositorioMySQL().guardar_empleado(empleado)
+            RepositorioEmpleadosMySQL().guardar_empleado(empleado)

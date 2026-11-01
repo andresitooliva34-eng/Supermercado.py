@@ -213,21 +213,22 @@ CREATE ROLE rol_administrador, rol_cajero;
 -- Administrador: todos los permisos sobre la base codemarket
 GRANT ALL PRIVILEGES ON codemarket.* TO rol_administrador;
 
--- Cajero: consulta catálogo y clientes, registra clientes y ventas, y solo
--- puede modificar la columna stock de producto. No ve empleados, no cambia
--- precios, no anula ventas y no borra nada.
+-- Cajero: consulta catálogo, clientes y los datos necesarios para autenticar
+-- empleados; registra clientes y ventas, y solo modifica la columna stock de
+-- productos. No cambia precios, no anula ventas y no borra registros.
 GRANT SELECT ON codemarket.productos       TO rol_cajero;
 GRANT SELECT ON codemarket.categorias      TO rol_cajero;
-GRANT SELECT, INSERT ON codemarket.clientes       TO rol_cajero;
+GRANT SELECT, INSERT, UPDATE ON codemarket.clientes TO rol_cajero;
+GRANT SELECT ON codemarket.empleados      TO rol_cajero;
 GRANT SELECT, INSERT ON codemarket.ventas          TO rol_cajero;
 GRANT SELECT, INSERT ON codemarket.detalle_venta   TO rol_cajero;
 GRANT UPDATE (stock) ON codemarket.productos       TO rol_cajero;
 
--- MySQL genera contraseñas aleatorias; copiá la contraseña generada para
--- cm_admin a la configuración local. No se distribuyen contraseñas fijas.
+-- MySQL genera contraseñas aleatorias; copiá ambas a la configuración local.
 CREATE USER 'cm_admin'@'localhost' IDENTIFIED BY RANDOM PASSWORD;
 CREATE USER 'cm_cajero'@'localhost' IDENTIFIED BY RANDOM PASSWORD;
 
 GRANT rol_administrador TO 'cm_admin'@'localhost';
 GRANT rol_cajero        TO 'cm_cajero'@'localhost';
-SET DEFAULT ROLE ALL TO 'cm_admin'@'localhost', 'cm_cajero'@'localhost';
+SET DEFAULT ROLE rol_administrador TO 'cm_admin'@'localhost';
+SET DEFAULT ROLE rol_cajero TO 'cm_cajero'@'localhost';

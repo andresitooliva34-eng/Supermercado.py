@@ -8,8 +8,11 @@ from logic.carrito import Carrito
 from logic.cliente import Cliente
 from logic.pago import crear_pago
 from logic.producto import Producto
-from logic.repositorio_mysql import RepositorioMySQL
+from logic.repositorio_categorias import RepositorioCategoriasMySQL
+from logic.repositorio_clientes import RepositorioClientesMySQL
+from logic.repositorio_empleados import RepositorioEmpleadosMySQL
 from logic.repositorio_productos import RepositorioProductosMySQL
+from logic.repositorio_ventas import RepositorioVentasMySQL
 from logic.supermercado import Supermercado
 from logic.validaciones import dni_valido, limpiar_dni, telefono_valido
 from logic.venta import Venta
@@ -66,8 +69,11 @@ class VentanaSupermercado:
 
         # Todos los datos operativos se almacenan en MySQL.
         self.supermercado = Supermercado()
-        self.repo_mysql = RepositorioMySQL()
+        self.repo_categorias = RepositorioCategoriasMySQL()
+        self.repo_clientes = RepositorioClientesMySQL()
+        self.repo_empleados = RepositorioEmpleadosMySQL()
         self.repo_productos = RepositorioProductosMySQL()
+        self.repo_ventas = RepositorioVentasMySQL()
         self._recargar_catalogo()
 
         # Creación del carrito
@@ -434,7 +440,7 @@ class VentanaSupermercado:
     ):
 
         color_normal = (
-            "#2E7D32"
+            "#687554"
             if destacado
             else "#558B2F"
         )
@@ -536,8 +542,8 @@ class VentanaSupermercado:
 
     def _exportar_historial(self, exportador):
         try:
-            ventas = self.repo_mysql.listar_ventas()
-        except (Error, FileNotFoundError) as error:
+            ventas = self.repo_ventas.listar_ventas()
+        except (Error, FileNotFoundError, ValueError) as error:
             messagebox.showerror(
                 "Historial", f"No se pudo cargar el historial:\n{error}",
                 parent=self.ventana
@@ -546,7 +552,7 @@ class VentanaSupermercado:
         exportador(self.ventana, ventas)
 
     def _empleados(self):
-        return self.repo_mysql.listar_empleados()
+        return self.repo_empleados.listar_empleados()
 
     def _actualizar_menu_administracion(self):
         self.menu_administracion.delete(0, tk.END)
@@ -593,8 +599,8 @@ class VentanaSupermercado:
         def validar():
             usuario, clave = (entrada.get().strip() for entrada in entradas)
             try:
-                empleado = self.repo_mysql.autenticar_empleado(usuario, clave)
-            except (Error, FileNotFoundError) as error:
+                empleado = self.repo_empleados.autenticar_empleado(usuario, clave)
+            except (Error, FileNotFoundError, ValueError) as error:
                 messagebox.showerror(
                     "Base de datos",
                     f"No se pudo iniciar sesión:\n{error}",
@@ -636,7 +642,7 @@ class VentanaSupermercado:
         self.actualizar_cliente()
 
     def _lista_categorias(self):
-        return [item["nombre"] for item in self.repo_mysql.listar_categorias()]
+        return [item["nombre"] for item in self.repo_categorias.listar_categorias()]
 
     def _recargar_catalogo(self):
         filas = self.repo_productos.listar_productos()
@@ -676,7 +682,7 @@ class VentanaSupermercado:
             dialogo.transient(ventana)
             try:
                 categorias = self._lista_categorias()
-            except Error as error:
+            except (Error, FileNotFoundError, ValueError) as error:
                 messagebox.showerror(
                     "Productos", f"No se pudieron cargar las categorías:\n{error}",
                     parent=dialogo
@@ -718,7 +724,7 @@ class VentanaSupermercado:
                 try:
                     fila_categoria = next(
                         (
-                            item for item in self.repo_mysql.listar_categorias()
+                            item for item in self.repo_categorias.listar_categorias()
                             if item["nombre"] == categoria
                         ),
                         None
@@ -740,7 +746,7 @@ class VentanaSupermercado:
                     self.mostrar_productos()
                     recargar()
                     dialogo.destroy()
-                except (Error, ValueError) as error:
+                except (Error, FileNotFoundError, ValueError) as error:
                     messagebox.showerror(
                         "Base de datos", f"No se pudo guardar el producto:\n{error}",
                         parent=dialogo
@@ -766,7 +772,7 @@ class VentanaSupermercado:
                     self.actualizar_categorias()
                     self.mostrar_productos()
                     recargar()
-                except (Error, ValueError) as error:
+                except (Error, FileNotFoundError, ValueError) as error:
                     messagebox.showerror(
                         "Productos", str(error), parent=ventana
                     )
@@ -792,7 +798,7 @@ class VentanaSupermercado:
         tabla.pack(padx=12, pady=12, fill="both", expand=True)
 
         def recargar():
-            datos = self.repo_mysql.listar_categorias()
+            datos = self.repo_categorias.listar_categorias()
             tabla.delete(*tabla.get_children())
             for item in datos:
                 tabla.insert("", "end", iid=str(item["id"]), values=(item["id"], item["nombre"]))
@@ -809,7 +815,7 @@ class VentanaSupermercado:
             if nombre is None:
                 return
             nombre = nombre.strip()
-            datos = self.repo_mysql.listar_categorias()
+            datos = self.repo_categorias.listar_categorias()
             if not nombre or any(
                 d["nombre"].casefold() == nombre.casefold()
                 and (actual is None or d["id"] != actual["id"])
@@ -818,7 +824,7 @@ class VentanaSupermercado:
                 messagebox.showwarning("Categoria", "Ingresá un nombre nuevo y no vacío.", parent=ventana)
                 return
             try:
-                self.repo_mysql.guardar_categoria({
+                self.repo_categorias.guardar_categoria({
                     "id": actual["id"] if actual else None,
                     "nombre": nombre
                 })
@@ -826,7 +832,7 @@ class VentanaSupermercado:
                 self.actualizar_categorias()
                 self.mostrar_productos()
                 recargar()
-            except (Error, IntegrityError) as error:
+            except (Error, IntegrityError, FileNotFoundError) as error:
                 messagebox.showerror(
                     "Categoria", f"No se pudo guardar la categoría:\n{error}",
                     parent=ventana
@@ -837,7 +843,7 @@ class VentanaSupermercado:
             if not seleccion:
                 return
             try:
-                self.repo_mysql.eliminar_categoria(int(seleccion[0]))
+                self.repo_categorias.eliminar_categoria(int(seleccion[0]))
                 self.actualizar_categorias()
                 recargar()
             except IntegrityError:
@@ -845,7 +851,7 @@ class VentanaSupermercado:
                     "Categoria", "Hay productos que usan esta categoria.",
                     parent=ventana
                 )
-            except Error as error:
+            except (Error, FileNotFoundError) as error:
                 messagebox.showerror(
                     "Categoria", f"No se pudo eliminar la categoría:\n{error}",
                     parent=ventana
@@ -880,8 +886,8 @@ class VentanaSupermercado:
 
         def recargar():
             try:
-                clientes[:] = self.repo_mysql.listar_clientes()
-            except Error as error:
+                clientes[:] = self.repo_clientes.listar_clientes()
+            except (Error, FileNotFoundError) as error:
                 messagebox.showerror(
                     "Clientes", f"No se pudieron cargar:\n{error}",
                     parent=ventana
@@ -964,8 +970,8 @@ class VentanaSupermercado:
                     telefono
                 )
                 try:
-                    self.repo_mysql.guardar_cliente(registro)
-                except (Error, ValueError) as error:
+                    self.repo_clientes.guardar_cliente(registro)
+                except (Error, FileNotFoundError, ValueError) as error:
                     messagebox.showerror(
                         "Clientes", f"No se pudo guardar:\n{error}",
                         parent=dialogo
@@ -1010,8 +1016,8 @@ class VentanaSupermercado:
             ):
                 return
             try:
-                self.repo_mysql.eliminar_cliente(int(seleccion[0]))
-            except Error as error:
+                self.repo_clientes.eliminar_cliente(int(seleccion[0]))
+            except (Error, FileNotFoundError) as error:
                 messagebox.showerror(
                     "Clientes", f"No se pudo eliminar:\n{error}",
                     parent=ventana
@@ -1049,7 +1055,7 @@ class VentanaSupermercado:
         def recargar():
             try:
                 empleados = self._empleados()
-            except Error as error:
+            except (Error, FileNotFoundError) as error:
                 messagebox.showerror(
                     "Empleados", f"No se pudieron cargar:\n{error}",
                     parent=ventana
@@ -1123,7 +1129,7 @@ class VentanaSupermercado:
                     "activo": activo.get()
                 }
                 try:
-                    registro["id"] = self.repo_mysql.guardar_empleado(
+                    registro["id"] = self.repo_empleados.guardar_empleado(
                         registro, clave or None
                     )
                     if (
@@ -1135,7 +1141,7 @@ class VentanaSupermercado:
                         self.actualizar_cliente()
                     recargar()
                     dialogo.destroy()
-                except (Error, IntegrityError, ValueError) as error:
+                except (Error, FileNotFoundError, IntegrityError, ValueError) as error:
                     messagebox.showerror(
                         "Empleados", f"No se pudo guardar el empleado:\n{error}",
                         parent=dialogo
@@ -1166,9 +1172,9 @@ class VentanaSupermercado:
                 return
             if messagebox.askyesno("Empleados", "Eliminar el empleado seleccionado?", parent=ventana):
                 try:
-                    self.repo_mysql.eliminar_empleado(empleado["id"])
+                    self.repo_empleados.eliminar_empleado(empleado["id"])
                     recargar()
-                except Error as error:
+                except (Error, FileNotFoundError) as error:
                     messagebox.showerror(
                         "Empleados", f"No se pudo eliminar:\n{error}",
                         parent=ventana
@@ -1333,7 +1339,7 @@ class VentanaSupermercado:
             and self.cliente.nombre_completo == "Cliente General"
         ):
             return
-        self.repo_mysql.guardar_cliente(self.cliente)
+        self.repo_clientes.guardar_cliente(self.cliente)
 
     def actualizar_cliente(self):
         cajero = self.empleado_actual.get("nombre", "") if self.empleado_actual else "Sin sesión"
@@ -1486,7 +1492,7 @@ class VentanaSupermercado:
     def actualizar_categorias(self):
         categorias = [
             categoria["nombre"]
-            for categoria in self.repo_mysql.listar_categorias()
+            for categoria in self.repo_categorias.listar_categorias()
         ]
 
         self.categoria["values"] = (
@@ -1945,7 +1951,7 @@ class VentanaSupermercado:
 
             try:
                 self.guardar_cliente()
-                nuevo_id = self.repo_mysql.registrar_venta(
+                nuevo_id = self.repo_ventas.registrar_venta(
                     self.carrito,
                     self.cliente.id or None,
                     self.empleado_actual["id"],
@@ -2008,8 +2014,8 @@ class VentanaSupermercado:
 
     def mostrar_historial(self):
         try:
-            ventas = self.repo_mysql.listar_ventas()
-        except (Error, FileNotFoundError) as error:
+            ventas = self.repo_ventas.listar_ventas()
+        except (Error, FileNotFoundError, ValueError) as error:
             messagebox.showerror(
                 "Historial", f"No se pudo cargar el historial:\n{error}",
                 parent=self.ventana
@@ -2119,7 +2125,7 @@ def iniciar_interfaz():
 
     try:
         VentanaSupermercado(ventana)
-    except (Error, FileNotFoundError) as error:
+    except (Error, FileNotFoundError, ValueError) as error:
         messagebox.showerror(
             "Base de datos",
             f"No se pudo iniciar la aplicación con MySQL:\n{error}",

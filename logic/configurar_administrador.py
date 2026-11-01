@@ -6,14 +6,14 @@ import sys
 from mysql.connector import Error
 
 from data.conexion import obtener_conexion
-from logic.repositorio_mysql import RepositorioMySQL
+from logic.repositorio_empleados import RepositorioEmpleadosMySQL
 
 
 def crear_administrador():
     conexion = None
     cursor = None
     try:
-        conexion = obtener_conexion()
+        conexion = obtener_conexion(administrativa=True)
         cursor = conexion.cursor()
         cursor.execute(
             """SELECT COUNT(*) FROM empleados
@@ -48,7 +48,7 @@ def crear_administrador():
         "rol": "Administrador",
         "activo": True
     }
-    RepositorioMySQL().guardar_empleado(empleado, clave)
+    RepositorioEmpleadosMySQL().guardar_empleado(empleado, clave)
     print("Cuenta de Administrador creada. La contraseña no se muestra.")
 
 

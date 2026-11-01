@@ -1,6 +1,8 @@
 {
   "host": "localhost",
-  "user": "cm_admin",
+  "user": "cm_cajero",
   "password": "CONFIGURAR_LOCALMENTE",
+  "admin_user": "cm_admin",
+  "admin_password": "CONFIGURAR_LOCALMENTE",
   "database": "codemarket"
 }
